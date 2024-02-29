@@ -1,0 +1,73 @@
+body {
+    background-color: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.container {
+    flex-grow: 1;
+}
+
+a:hover {
+    background-color: transparent;
+    color: #FF4B32;
+    transform: scale(1.1);
+}
+
+.navbar-nav .nav-link.text-underline {
+    text-decoration: underline;
+}
+
+.product-card {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.product-img {
+    border-top-left-radius: 6px; /* Радиус закругления верхнего левого угла */
+    border-top-right-radius: 6px; /* Радиус закругления верхнего правого угла */
+    min-width: 348px;
+    min-height: 300px;
+    max-height: 400px;
+    object-fit: cover;
+}
+
+.product-details {
+    padding: 15px;
+}
+
+.footer {
+    padding: 50px 0;
+    background-image: url('static/img/footerPhoto.jpg'); /* Путь к изображению для фона футера */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-color: rgba(0, 0, 0, 0.7); /* Затемнение (чем меньше значение, тем более прозрачно) */
+    color: #fff; /* Цвет текста для контраста */
+
+}
+
+#resetButton {
+    display: inline-block;
+    padding: 15px 40px;
+    margin-top: 20px;
+    background-color: #FFC107;
+    color: white;
+    text-decoration: none; /* Если это необходимо */
+    border: 2px solid #FFC107;
+    border-radius: 10px;
+    transition: all 0.3s;
+}
+
+#resetButton:hover {
+    background-color: #FFA000; /* Цвет при наведении (по вашему выбору) */
+    border-color: #FFA000; /* Цвет границы при наведении (по вашему выбору) */
+}
+
+#searchButton:hover{
+    background-color: #FFA000; /* Цвет при наведении (по вашему выбору) */
+    border-color: #FFA000; /* Цвет границы при наведении (по вашему выбору) */
+}

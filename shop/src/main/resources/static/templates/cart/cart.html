@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Basket</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+          integrity="sha384-5e2ESR8Ycmos6g3gAKr1Jvwye8sW4U1u/cAKulfVJnkakCcMqhOudbtPnvJ+nbv7" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/cart.css">
+
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #fdfdfd; padding-top: 10px; padding-bottom: 10px;">
+    <div class="container">
+        <a class="navbar-brand mx-auto" href="/api/index">
+            <img src="/img/coffee-bean-roast-brew-svgrepo-com.svg" alt="Логотип" style="max-width: 100px; max-height: 50px;">
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link text-dark" href="/api/index">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark" href="/api/products">Catalog</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-warning text-underline" href="#">Basket <i class="fas fa-shopping-basket"></i>
+                        <span class="sr-only ">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark" th:if="${role == 'ROLE_ANONYMOUS'}" href="/auth/register">
+                        Account <i class="fas fa-user"></i>
+                    </a>
+                    <a class="nav-link text-dark" th:if="${role != 'ROLE_ANONYMOUS'}" th:href="${role == 'ROLE_ADMIN' ? '/api/admin/adminPage' : '/api/users/userPage'}">
+                        Account <i class="fas fa-user"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<section class="h-100" style="background-color: #eee;">
+    <div class="container h-100 py-5">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-10">
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="fw-normal mb-0 text-black">Shopping Cart</h3>
+<!--                    <div>-->
+<!--                        <p class="mb-0"><span class="text-muted">Sort by:</span> <a href="#!" class="text-body">price-->
+<!--                            <i class="fas fa-angle-down mt-1"></i></a></p>-->
+<!--                    </div>-->
+                </div>
+
+                <div th:if="${not #lists.isEmpty(cartItems)}" th:each="product : ${cartItems}">
+                    <div class="card rounded-3 mb-4">
+                        <div class="card-body p-4">
+                            <div class="row d-flex justify-content-between align-items-center">
+                                <div class="col-md-2 col-lg-2 col-xl-2">
+                                    <img src="https://gas-kvas.com/grafic/uploads/posts/2023-10/1696528260_gas-kvas-com-p-kartinki-kofe-12.jpg" class="img-fluid rounded-3"
+                                         alt="product">
+                                </div>
+                                <div class="col-md-3 col-lg-3 col-xl-3">
+                                    <p class="lead fw-normal mb-2" th:text="${product.name}"></p>
+                                    <p><span class="text-muted">Category: </span> <span th:text="${product.category}"></span></p>
+                                </div>
+                                <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
+                                    <button class="btn btn-link px-2"
+                                            th:data-product-id="${product.id}"
+                                            onclick="this.parentNode.querySelector('input[type=number]').stepDown();
+                                            removeFromCart(this)">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <label>
+                                        <input min="0" name="quantity" id="quantityInput" th:value="${product.quantity}"
+                                               type="number"
+                                               class="form-control form-control-sm" readonly
+                                               />
+                                    </label>
+                                    <button class="btn btn-link px-2"
+                                            th:data-product-id="${product.id}"
+                                            onclick="this.parentNode.querySelector('input[type=number]').stepUp();
+                                            addToCart(this)">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+
+
+                                <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
+                                    <h5 class="mb-0" th:text="${'$' + #numbers.formatDecimal(product.price * product.quantity, 0, 'COMMA', 2, 'POINT')}"></h5>
+                                </div>
+
+                                <div class="col-md-1 col-lg-1 col-xl-1 text-end">
+                                    <a href="#" class="text-danger" style="position: relative; display: inline-block;">
+                                        <i class="fas fa-trash fa-lg">
+                                            <button th:data-product-id="${product.id}" onclick="removeFromAllCart(this)"
+                                                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;">
+                                            </button>
+                                        </i>
+                                    </a>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div th:if="${#lists.isEmpty(cartItems)}">
+                    <p>Your cart is empty.</p>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-body p-4 d-flex flex-row">
+                        <div class="form-outline flex-fill">
+                            <input type="text" id="phone" class="form-control form-control-lg" required />
+                            <label class="form-label" for="phone">Сontact phone number</label>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="card">
+                    <div class="card-body">
+                        <button type="button" class="btn btn-warning btn-block btn-lg" onclick="proceedToCheckout()">Proceed to Pay</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<div class=" footer">
+    <div class="container">
+
+        <footer class="mt-5">
+            <div class="text-center">
+                <p>&copy; 2024 Your Coffee Shop. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+</div>
+
+<!-- Подключение Bootstrap JS (если необходимо) -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="../../js/cart.js"></script>
+
+
+</body>
+</html>

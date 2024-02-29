@@ -1,0 +1,32 @@
+body {
+    background-color: #eee;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.container {
+    flex: 1;
+}
+
+a:hover {
+    background-color: transparent;
+    color: #FF4B32;
+    transform: scale(1.1);
+}
+
+.navbar-nav .nav-link.text-underline {
+    text-decoration: underline;
+}
+
+.footer {
+    padding: 50px 0;
+    background-image: url('static/img/footerPhoto.jpg'); /* Путь к изображению для фона футера */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-color: rgba(0, 0, 0, 0.7); /* Затемнение (чем меньше значение, тем более прозрачно) */
+    color: #fff; /* Цвет текста для контраста */
+    margin-top: auto; /* Добавляем отступ сверху для "липкости" */
+}

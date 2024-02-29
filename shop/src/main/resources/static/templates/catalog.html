@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Catalog</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+          integrity="sha384-5e2ESR8Ycmos6g3gAKr1Jvwye8sW4U1u/cAKulfVJnkakCcMqhOudbtPnvJ+nbv7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/catalog.css">
+</head>
+
+<body>
+
+<!--Навигационная шапка Bootstrap  #55362c -->
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #fdfdfd; padding-top: 10px; padding-bottom: 10px;">
+    <div class="container">
+        <a class="navbar-brand mx-auto" href="/api/index">
+        <img src="/img/coffee-bean-roast-brew-svgrepo-com.svg" alt="Логотип" style="max-width: 100px; max-height: 50px;">
+    </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link text-dark" href="/api/index">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-warning text-underline" href="#">Catalog<span class="sr-only ">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark" href="/cart"> Basket <i class="fas fa-shopping-basket"></i> </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark" th:if="${role == 'ROLE_ANONYMOUS'}" href="/auth/register">
+                        Account <i class="fas fa-user"></i>
+                    </a>
+                    <a class="nav-link text-dark" th:if="${role != 'ROLE_ANONYMOUS'}" th:href="${role == 'ROLE_ADMIN' ? '/api/admin/adminPage' : '/api/users/userPage'}">
+                        Account <i class="fas fa-user"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-5 ">
+    <button id="resetButton" class="btn btn-secondary mb-2">Reset Filters</button>
+    <div class="row mb-3 align-items-center">
+        <div class="col-md-4">
+            <!-- Category Dropdown -->
+            <div class="form-group">
+                <label for="categorySelect">Category:</label>
+                <select class="form-control" id="categorySelect">
+                    <option value="all">All Categories</option>
+                    <option th:each="category : ${categories}"
+                            th:value="${category}"
+                            th:text="${category}">
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <!-- Sort Dropdown -->
+            <div class="form-group">
+                <label for="sortSelect">Sort By:</label>
+                <select class="form-control" id="sortSelect">
+                    <option value="default">Default</option>
+                    <option value="priceLowToHigh">Price: Low to High</option>
+                    <option value="priceHighToLow">Price: High to Low</option>
+                    <!-- Add more sorting options as needed -->
+                </select>
+            </div>
+        </div>
+
+        <div class="col-md-4 align-self-center" style="padding-top: 15px;">
+            <!-- Search Input -->
+            <div class="input-group">
+                <input type="text" class="form-control" id="productNameInput" placeholder="Search by Name" aria-label="Search by Name" aria-describedby="searchButton">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" id="searchButton">Search</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+        <div class="row" >
+            <div th:each="product : ${products}" class="col-md-4">
+                <div class="product-card border-secondary">
+                    <img src="https://images.unsplash.com/photo-1637029436347-e33bf98a5412?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Product Image" class="img-fluid product-img">
+                    <div class="product-details">
+                        <h5 class="card-title" th:text="${product.name}"></h5>
+                        <p class="card-text" th:text="${product.description}"></p>
+                        <p class="card-text" th:text="${'Price: ' + product.price}"></p>
+                        <button class="btn btn-warning" th:data-product-id="${product.id}"
+                                onclick="addToCart(this)">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+</div>
+    
+<div class=" footer">
+    <div class="container">
+        <!-- Footer -->
+        <footer class="mt-5">
+            <div class="text-center">
+                <p>&copy; 2024 Your Coffee Shop. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+</div>
+
+<!-- Подключение Bootstrap JS (если необходимо) -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="../js/catalog.js"></script>
+
+
+</body>
+</html>

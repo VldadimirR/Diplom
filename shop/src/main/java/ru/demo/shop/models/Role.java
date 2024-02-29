@@ -1,0 +1,6 @@
+package ru.demo.shop.models;
+
+public enum Role {
+    ROLE_ADMIN,
+    ROLE_USER
+}

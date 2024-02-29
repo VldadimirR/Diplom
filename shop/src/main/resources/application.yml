@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/shop
+    username: postgres
+    password: idLxCcMRT15O
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+  main:
+    web-application-type: servlet
+  thymeleaf:
+    prefix: classpath:static/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    cache: false
+
+app:
+  security:
+    jwt:
+      secret-key: "6A576D5A7134743777217A25432A462D4A614E645267556B5870327235753878"
+
+
+#logging:
+#  level:
+#    org:
+#      springframework:
+#        security: TRACE

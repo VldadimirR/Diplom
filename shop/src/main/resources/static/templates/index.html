@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Your Website</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+          integrity="sha384-5e2ESR8Ycmos6g3gAKr1Jvwye8sW4U1u/cAKulfVJnkakCcMqhOudbtPnvJ+nbv7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/index.css"/>
+</head>
+<body>
+
+<!--Навигационная шапка Bootstrap  #55362c -->
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #fdfdfd; padding-top: 10px; padding-bottom: 10px;">
+    <div class="container">
+        <a class="navbar-brand mx-auto" href="#">
+        <img src="/img/coffee-bean-roast-brew-svgrepo-com.svg" alt="Логотип" style="max-width: 100px; max-height: 50px;">
+    </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link text-warning text-underline" href="#">Home <span class="sr-only ">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark " href="/api/products">Catalog</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark" href="/cart"> Basket <i class="fas fa-shopping-basket"></i> </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark" th:if="${role == 'ROLE_ANONYMOUS'}" href="/auth/register">
+                        Account <i class="fas fa-user"></i>
+                    </a>
+                    <a class="nav-link text-dark" th:if="${role != 'ROLE_ANONYMOUS'}" th:href="${role == 'ROLE_ADMIN' ? '/api/admin/adminPage' : '/api/users/userPage'}">
+                        Account <i class="fas fa-user"></i>
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</nav>
+   <section class="hero-section mb-4;" style="position: relative; overflow: hidden; height: 100vh;">
+    <img src="https://images.unsplash.com/photo-1497935586351-b67a49e012bf?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Welcome Image" style="width: 100%; height: auto; object-fit: cover;">
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: white;">
+        <p style="font-size: 1.5em; margin-top: 10px;">GOOD COFFEE WILL ALWAYS FIND THE AUDIENCE</p>
+        <h1 style="font-size: 6em; margin: 0;">WELCOME TO</h1>
+        <h1 style="font-size: 6em; margin: 0;">SHOP</h1>
+        <a href="/api/products" style="display: inline-block; padding: 15px 40px; margin-top: 20px; background-color: #FFC107; color: white; text-decoration: none; border: 2px solid #FFC107; border-radius: 25px; transition: all 0.3s;">
+           Shop now
+        </a>
+    </div>
+</section>
+<section class="information-section ">
+    <div class="container " style="padding-top: 50px;">
+        <div class="row mb-4 ">
+            <!-- Карточки -->
+            <div class="col-md-3" style="margin-bottom: 15px; margin-top: 15px; ">
+                <div class="card border-0">
+                    <div class="card-body">
+                        <img width="50" height="50" src="https://img.icons8.com/ios/50/coffee--v1.png" alt="coffee--v1 " class="mb-2" />
+                        <h5 class="card-title">AWESOMAE AROMA</h5>
+                        <p class="card-text">The coffee is brewed by first roasting the green coffee beans</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3" style="margin-bottom: 15px; margin-top: 15px;">
+                <div class="card border-0">
+                    <div class="card-body" >
+                        <img width="50" height="50" src="https://img.icons8.com/ios/50/medal.png" alt="medal"  class="mb-2"/>
+                        <h5 class="card-title">HIGH QUALITY</h5>
+                        <p class="card-text">The coffee is brewed by first roasting the green coffee beans</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3" style="margin-bottom: 15px; margin-top: 15px; ">
+                <div class="card border-0">
+                    <div class="card-body ">
+                        <img width="50" height="50" src="https://img.icons8.com/ios/50/coffee-beans-.png" alt="coffee-beans-"  class="mb-2"/>
+                        <h5 class="card-title">PURE GRADES</h5>
+                        <p class="card-text">The coffee is brewed by first roasting the green coffee beans</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 " style="margin-bottom: 15px; margin-top: 15px; ">
+                <div class="card border-0" >
+                    <div class="card-body">
+                        <img width="50" height="50" src="https://img.icons8.com/ios/50/milk-carton.png" alt="milk-carton"  class="mb-2"/>
+                        <h5 class="card-title">PROPER ROASTING</h5>
+                        <p class="card-text">The coffee is brewed by first roasting the green coffee beans</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Изображение и текст -->
+        <div class="row" style="padding-bottom: 60px;">
+            <div class="col-md-6">
+                <img src="/img/photo-1529892485617-25f63cd7b1e9.jpg" alt="Изображение" class="img-fluid rounded-top rounded-left rounded-bottom" style="max-height: 800px;">
+            </div>
+            <div class="col-md-6" >
+                <h1 style="margin-bottom: 32px;">Best Coffee House In Your Home Town</h1>
+                <h6 style="margin-bottom: 16px;">Our incredibly rate come from humble beginnings in yemen,
+                    where decades of political turmoil once forced local farmers to
+                    start growing khat, a narcotic native to the Arabian Peninsula.</h6>
+                <h6>The Dawoodi Bohara Community changed this, removing all
+                    the khat plants and replacing them with coffee, bringing this
+                    humble brew black to its roots.</h6>
+                    <h6> As the aroma of freshly brewed coffee wafted through the air, it didn't take long for the community to recognize the potential of their endeavor. The coffee beans thrived, and soon the town became renowned for its rich, flavorful coffee.</h6>
+                    <a href="/api/products" style="display: inline-block; padding: 15px 40px; margin-top: 20px; background-color: #FFC107; color: white; text-decoration: none; border: 2px solid #FFC107; border-radius: 25px; transition: all 0.3s;">
+                        Shop now
+                     </a>
+            </div>
+        </div>
+    </div>
+    
+</section>
+<div class=" footer">
+    <div class="container">
+        <!-- Footer -->
+        <footer class="mt-5">
+            <div class="text-center">
+                <p>&copy; 2024 Your Coffee Shop. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+</div>
+
+<!-- Подключение Bootstrap JS (если необходимо) -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+</body>
+</html>
