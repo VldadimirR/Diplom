@@ -3,6 +3,7 @@ package ru.demo.shop.models;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,14 +23,19 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NonNull
     private String firstname;
 
+    @NonNull
     private String email;
 
+    @NonNull
     private String phone;
 
+    @NonNull
     private String address;
 
+    @NonNull
     private String password;
 
     @Enumerated(EnumType.STRING)

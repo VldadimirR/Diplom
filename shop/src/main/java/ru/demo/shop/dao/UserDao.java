@@ -14,6 +14,5 @@ public interface UserDao {
     void deleteUser(Long userId);
     boolean existsUserWithId(Long userId);
     long getUserIdByUsername(String username);
-
-
+    boolean isEmailAlreadyInUse(String email);
 }

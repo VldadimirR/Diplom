@@ -1,6 +1,8 @@
 package ru.demo.shop.models;
 
 import jakarta.persistence.*;
+import org.springframework.lang.NonNull;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -12,9 +14,13 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NonNull
     private String name;
+    @NonNull
     private String description;
+    @NonNull
     private Double price;
+    @NonNull
     private String category;
 
     @Transient

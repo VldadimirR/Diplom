@@ -115,4 +115,8 @@ public class UserService {
         Optional<User> currentUserOptional = getCurrentUser();
         return currentUserOptional.map(User::getRole).orElse(null);
     }
+
+    public boolean isEmailAlreadyInUse(String email) {
+        return userDao.isEmailAlreadyInUse(email);
+    }
 }

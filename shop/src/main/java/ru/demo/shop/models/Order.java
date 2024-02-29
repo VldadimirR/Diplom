@@ -2,6 +2,7 @@ package ru.demo.shop.models;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.lang.NonNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,7 +21,9 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems = new ArrayList<>();
 
+    @NonNull
     private String phoneContact;
+    @NonNull
     private Double totalAmount;
     @Enumerated(EnumType.STRING)
     private Status status;

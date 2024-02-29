@@ -110,7 +110,7 @@
                                 <h5 class="card-title ">Order #<span th:text="${order.id}"></span></h5>
                             </div>
                             <div class="card-body">
-                                <p><strong>Delivery Address:</strong> <span th:text="${order.deliveryAddress}"></span></p>
+                                <p><strong>Contact Phone:</strong> <span th:text="${order.phoneContact}"></span></p>
                                 <p><strong>Total Amount:</strong> $<span th:text="${order.totalAmount}"></span></p>
                                 <p><strong>Status:</strong> <span th:text="${order.status}"></span></p>
                                 <p><strong>Order Date:</strong> <span th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm:ss')}"></span></p>

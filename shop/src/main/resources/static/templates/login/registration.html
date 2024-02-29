@@ -9,13 +9,20 @@
 </head>
 
 <body>
+
 <section class="pt-5 pb-5 mt-0 align-items-center d-flex bg-dark" style="min-height: 100vh; background-size: cover; background-image: url(https://images.unsplash.com/photo-1518685101044-3b5a4e7580a3?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D);">
     <div class="container-fluid">
         <div class="row  justify-content-center align-items-center d-flex-row text-center h-100">
+
             <div class="col-12 col-md-4 col-lg-3   h-50 ">
                 <div class="card shadow">
                     <div class="card-body mx-auto">
                         <h4 class="card-title mt-3 text-center">Create Account</h4>
+                        <div th:if="${param.error}">
+                            <div class="alert alert-danger">
+                                <p>Email already in use</p>
+                            </div>
+                        </div>
                         <p class="text-center">Get started with your free account</p>
                         <form action="/auth/register" method="post">
                             <div class="form-group input-group">

@@ -60,17 +60,14 @@ public class CartController {
 
     @PostMapping("/addToCart")
     public String addToCart(@RequestParam("productId") String productId, HttpSession session) {
-        // Получаем текущее состояние корзины из сессии или создаем новую, если ее нет
         List<String> cart = (List<String>) session.getAttribute("cart");
 
         if (cart == null) {
             cart = new ArrayList<>();
         }
 
-        // Добавляем новый продукт в корзину
         cart.add(productId);
 
-        // Сохраняем обновленное состояние корзины в сессии
         session.setAttribute("cart", cart);
 
         return "redirect:/cart";
@@ -80,17 +77,14 @@ public class CartController {
     @PostMapping("/removeFromCart")
     public String removeFromCart(@RequestParam("productId") String productId,
                                  HttpSession session) {
-        // Получаем текущее состояние корзины из сессии или создаем новую, если ее нет
         List<String> cart = (List<String>) session.getAttribute("cart");
 
         if (cart == null) {
-            // Если корзины еще нет, то нет ничего, что нужно удалять
             return "redirect:/cart";
         }
 
         cart.remove(productId);
 
-        // Сохраняем обновленное состояние корзины в сессии
         session.setAttribute("cart", cart);
 
         return "redirect:/cart";
@@ -98,18 +92,16 @@ public class CartController {
 
     @PostMapping("/removeAllByFromCart")
     public String removeAllByIdFromCart(@RequestParam("productId") String productId, HttpSession session) {
-        // Получаем текущее состояние корзины из сессии или создаем новую, если ее нет
+
         List<String> cart = (List<String>) session.getAttribute("cart");
 
         if (cart == null || cart.isEmpty()) {
-            // Если корзины еще нет или она пуста, то нет ничего, что нужно удалять
+
             return "redirect:/cart";
         }
 
-        // Удаляем все вхождения продукта с указанным ID из корзины
         cart.removeIf(str -> str.equals(productId));
 
-        // Сохраняем обновленное состояние корзины в сессии
         session.setAttribute("cart", cart);
 
         return "redirect:/cart";
@@ -117,7 +109,7 @@ public class CartController {
 
     @GetMapping("/checkout")
     public String checkout(Model model, HttpSession session) {
-        // Получаем текущее состояние корзины из сессии
+
         List<String> cartItems = (List<String>) session.getAttribute("cart");
 
         if (cartItems != null && !cartItems.isEmpty()) {

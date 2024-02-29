@@ -59,4 +59,9 @@ public class UserJPADataAccessService implements UserDao {
             return 0L;
         }
     }
+
+    @Override
+    public boolean isEmailAlreadyInUse(String email) {
+        return userRepository.existsByEmail(email);
+    }
 }
