@@ -74,10 +74,21 @@
                     <input type="hidden" name="productList" th:value="${productList}" />
                     <input type="hidden" name="status" th:value="${status}" />
                     <input type="hidden" name="totalAmount" th:value="${totalAmount}" />
-                    <a><p class="order">Confirm Order</p></a>
+                    <a href="#" id="confirmOrderButton"><p class="order">Confirm Order</p></a>
                     <button type="submit" id="submitButton" style="display: none;"></button>
                 </form>
+            </div>
+        </div>
+    </div>
 
+    <!-- Модальное окно подтверждения заказа -->
+    <div id="confirmOrderModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>Вы уверены, что хотите сделать заказ?</p>
+            <div class="modal-buttons">
+                <button id="confirmOrderYesButton">Да</button>
+                <button id="confirmOrderNoButton">Нет</button>
             </div>
         </div>
     </div>

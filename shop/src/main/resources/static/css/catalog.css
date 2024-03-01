@@ -71,3 +71,51 @@ a:hover {
     background-color: #FFA000; /* Цвет при наведении (по вашему выбору) */
     border-color: #FFA000; /* Цвет границы при наведении (по вашему выбору) */
 }
+
+#dialogOverlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+}
+
+#dialogBox {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#dialogBox p {
+    margin: 0 0 10px;
+}
+
+#dialogBox button {
+    padding: 10px 20px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#dialogBox button:focus {
+    outline: none;
+}
+
+#confirmButton {
+    background-color: #ffc107;
+    color: #fff;
+}
+
+#cancelButton {
+    background-color: #dc3545;
+    color: #fff;
+}

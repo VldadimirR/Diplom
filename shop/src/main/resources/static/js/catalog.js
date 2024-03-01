@@ -1,13 +1,31 @@
 $(document).ready(function() {
-    // Получаем значение сортировки из URL
+    toastr.options = {
+        "closeButton": true,
+        "debug": false,
+        "newestOnTop": false,
+        "progressBar": true,
+        "positionClass": "toast-top-right",
+        "preventDuplicates": true,
+        "showDuration": "300",
+        "hideDuration": "1000",
+        "timeOut": "1500",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+    };
+});
+
+$(document).ready(function() {
     let urlParams = new URLSearchParams(window.location.search);
     let selectedSort = urlParams.get('sort');
     let selectedCategory = urlParams.get('category');
-    // Устанавливаем выбранную опцию в селекторе сортировки
+
     if (selectedSort) {
         $('#sortSelect').val(selectedSort);
     }
-    // Устанавливаем выбранную опцию в селекторе
+
     if (selectedCategory) {
         $('#categorySelect').val(selectedCategory);
     }
@@ -28,6 +46,7 @@ $(document).ready(function(){
     $('#categorySelect').change(function () {
         let selectedCategory = $('#categorySelect').val();
         let currentUrl = new URL(window.location.href);
+
         currentUrl.searchParams.delete("productName");
 
         currentUrl.searchParams.set("category", selectedCategory);
@@ -41,6 +60,7 @@ $(document).ready(function(){
 
         let productName = $('#productNameInput').val();
         let currentUrl = new URL(window.location.href);
+
         currentUrl.searchParams.delete("sort");
         currentUrl.searchParams.delete("category");
 
@@ -52,18 +72,33 @@ $(document).ready(function(){
 });
 
 $(document).ready(function() {
-    // Обработчик события клика для кнопки сброса
     $('#resetButton').click(function() {
-        // Удаляем параметры сортировки, категории и поиска из URL
+
+        $('#dialogOverlay').fadeIn();
+    });
+
+    $('#confirmButton').click(function() {
+
         let currentUrl = new URL(window.location.href);
+
         currentUrl.searchParams.delete("sort");
         currentUrl.searchParams.delete("category");
         currentUrl.searchParams.delete("productName");
 
-        // Обновляем страницу с новым URL без параметров фильтрации
         window.location.href = currentUrl.toString();
+
+        $('#dialogOverlay').fadeOut();
+    });
+
+    $('#cancelButton').click(function() {
+
+        $('#dialogOverlay').fadeOut();
+        return false;
     });
 });
+
+
+
 
 function addToCart(button) {
     let productId = button.getAttribute("data-product-id");
@@ -74,10 +109,10 @@ function addToCart(button) {
         data: { productId: productId },
         success: function(response) {
 
+            toastr.success('Товар успешно добавлен в корзину!');
             console.log(response);
         },
         error: function(error) {
-
             console.error(error);
         }
     });

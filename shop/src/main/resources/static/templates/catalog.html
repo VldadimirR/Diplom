@@ -8,12 +8,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
           integrity="sha384-5e2ESR8Ycmos6g3gAKr1Jvwye8sW4U1u/cAKulfVJnkakCcMqhOudbtPnvJ+nbv7" crossorigin="anonymous">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
     <link rel="stylesheet" href="/css/catalog.css">
+
 </head>
 
 <body>
 
-<!--Навигационная шапка Bootstrap  #55362c -->
 <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #fdfdfd; padding-top: 10px; padding-bottom: 10px;">
     <div class="container">
         <a class="navbar-brand mx-auto" href="/api/index">
@@ -50,7 +52,7 @@
     <button id="resetButton" class="btn btn-secondary mb-2">Reset Filters</button>
     <div class="row mb-3 align-items-center">
         <div class="col-md-4">
-            <!-- Category Dropdown -->
+
             <div class="form-group">
                 <label for="categorySelect">Category:</label>
                 <select class="form-control" id="categorySelect">
@@ -63,21 +65,26 @@
             </div>
         </div>
 
+        <div id="dialogOverlay">
+            <div id="dialogBox">
+                <p>Вы уверены, что хотите сбросить параметры?</p>
+                <button id="confirmButton">Да</button>
+                <button id="cancelButton">Отмена</button>
+            </div>
+        </div>
+
         <div class="col-md-4">
-            <!-- Sort Dropdown -->
             <div class="form-group">
                 <label for="sortSelect">Sort By:</label>
                 <select class="form-control" id="sortSelect">
                     <option value="default">Default</option>
                     <option value="priceLowToHigh">Price: Low to High</option>
                     <option value="priceHighToLow">Price: High to Low</option>
-                    <!-- Add more sorting options as needed -->
                 </select>
             </div>
         </div>
 
         <div class="col-md-4 align-self-center" style="padding-top: 15px;">
-            <!-- Search Input -->
             <div class="input-group">
                 <input type="text" class="form-control" id="productNameInput" placeholder="Search by Name" aria-label="Search by Name" aria-describedby="searchButton">
                 <div class="input-group-append">
@@ -107,7 +114,6 @@
     
 <div class=" footer">
     <div class="container">
-        <!-- Footer -->
         <footer class="mt-5">
             <div class="text-center">
                 <p>&copy; 2024 Your Coffee Shop. All rights reserved.</p>
@@ -116,11 +122,11 @@
     </div>
 </div>
 
-<!-- Подключение Bootstrap JS (если необходимо) -->
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
 <script src="../js/catalog.js"></script>
 
 
