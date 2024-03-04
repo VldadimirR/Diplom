@@ -3,6 +3,7 @@ package ru.demo.shop.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import ru.demo.shop.dao.UserDao;
+import ru.demo.shop.models.Role;
 import ru.demo.shop.models.User;
 import ru.demo.shop.repositories.UserRepository;
 
@@ -63,5 +64,10 @@ public class UserJPADataAccessService implements UserDao {
     @Override
     public boolean isEmailAlreadyInUse(String email) {
         return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public long countByRole(Role role) {
+        return userRepository.countByRole(role);
     }
 }

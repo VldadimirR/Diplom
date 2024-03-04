@@ -1,5 +1,6 @@
 package ru.demo.shop.dao;
 
+import ru.demo.shop.models.Role;
 import ru.demo.shop.models.User;
 
 import java.util.List;
@@ -15,4 +16,5 @@ public interface UserDao {
     boolean existsUserWithId(Long userId);
     long getUserIdByUsername(String username);
     boolean isEmailAlreadyInUse(String email);
+    long countByRole(Role role);
 }

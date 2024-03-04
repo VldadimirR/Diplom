@@ -15,6 +15,7 @@ import ru.demo.shop.services.ProductService;
 import ru.demo.shop.services.UserService;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -109,6 +110,22 @@ public class ProductController {
         } catch (ProductNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    @GetMapping("/price")
+    public ResponseEntity<?> getProductPrices() {
+        try {
+            Map<String, Integer> priceDistribution = productService.getProductPriceDistribution();
+            return ResponseEntity.ok(priceDistribution);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching product prices");
+        }
+    }
+
+    @GetMapping("/count-by-category")
+    public ResponseEntity<?>  getProductCountByCategory() {
+        Map<String, Long> productCountByCategory = productService.getProductCountByCategory();
+        return ResponseEntity.ok(productCountByCategory);
     }
 
 }

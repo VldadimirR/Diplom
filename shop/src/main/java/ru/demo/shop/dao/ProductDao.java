@@ -26,4 +26,8 @@ public interface ProductDao {
 
     List<String>getAllCategories();
 
+    Integer countProductsByPriceLessThan(double i);
+    Integer countProductsByPriceBetween(double i, double i1);
+    Integer countProductsByPriceGreaterThanEqual(double i);
+    List<Object[]> getProductCountByCategory();
 }

@@ -6,6 +6,7 @@ import ru.demo.shop.dao.OrderDao;
 import ru.demo.shop.models.Order;
 import ru.demo.shop.models.OrderItem;
 import ru.demo.shop.models.Product;
+import ru.demo.shop.models.Status;
 import ru.demo.shop.repositories.OrderItemRepository;
 import ru.demo.shop.repositories.OrderRepository;
 
@@ -56,5 +57,20 @@ public class OrderJPADataAccessService implements OrderDao {
     @Override
     public List<Order> getOrdersByUserId(Long id) {
         return orderRepository.getOrdersByUserId(id);
+    }
+
+    @Override
+    public Integer countByStatus(Status status) {
+        return orderRepository.countByStatus(status);
+    }
+
+    @Override
+    public List<Object[]> getOrderCountByDate() {
+        return orderRepository.getOrderCountByDate();
+    }
+
+    @Override
+    public List<Object[]> getOrderCountByUserAuthStatus() {
+        return orderRepository.getOrderCountByUserAuthStatus();
     }
 }

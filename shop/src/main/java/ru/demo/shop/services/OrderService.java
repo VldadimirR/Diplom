@@ -9,20 +9,16 @@ import ru.demo.shop.models.Order;
 import ru.demo.shop.models.Status;
 import ru.demo.shop.request.OrderUpdateRequest;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class OrderService {
 
     private final OrderDao orderDao;
-    private final UserService userService;
-
 
     @Autowired
-    public OrderService(@Qualifier("jpaOrder") OrderDao orderDao, UserService userService) {
+    public OrderService(@Qualifier("jpaOrder") OrderDao orderDao) {
         this.orderDao = orderDao;
-        this.userService = userService;
     }
 
     public List<Order> getAllOrders() {
@@ -70,4 +66,33 @@ public class OrderService {
     public List<Order> getOrdersByUserId(Long id) {
         return orderDao.getOrdersByUserId(id);
     }
+
+    public Map<String, Integer> getOrderStatusCounts() {
+        Map<String, Integer> orderStatusCounts = new HashMap<>();
+        orderStatusCounts.put("CREATE", orderDao.countByStatus(Status.CREATE));
+        orderStatusCounts.put("IN_PROCESS", orderDao.countByStatus(Status.IN_PROCESS));
+        orderStatusCounts.put("COMPLETED", orderDao.countByStatus(Status.COMPLETED));
+        return orderStatusCounts;
+    }
+
+    public Map<String, Long> getOrderCountByDate() {
+        List<Object[]> result = orderDao.getOrderCountByDate();
+        return getOrderData(result);
+    }
+
+    public Map<String, Long> getOrderCountByUserAuthStatus() {
+        List<Object[]> result = orderDao.getOrderCountByUserAuthStatus();
+        return getOrderData(result);
+    }
+
+    private Map<String, Long> getOrderData(List<Object[]> result) {
+        Map<String, Long> orderData = new LinkedHashMap<>();
+        for (Object[] row : result) {
+            String key = (String) row[0];
+            Long count = (Long) row[1];
+            orderData.put(key, count);
+        }
+        return orderData;
+    }
+
 }

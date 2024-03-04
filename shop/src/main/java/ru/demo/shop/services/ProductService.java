@@ -17,6 +17,7 @@ public class ProductService {
     @Autowired
     public ProductService(@Qualifier("jpaProduct") ProductDao productDao) {
         this.productDao = productDao;
+
     }
 
     public List<Product> getAllProducts() {
@@ -126,5 +127,26 @@ public class ProductService {
         totalAmount = Math.round(totalAmount * 100.0) / 100.0;
 
         return totalAmount;
+    }
+
+    public Map<String, Integer> getProductPriceDistribution() {
+        Map<String, Integer> priceDistribution = new HashMap<>();
+        priceDistribution.put("lessThan50", productDao.countProductsByPriceLessThan(50));
+        priceDistribution.put("between50And100", productDao.countProductsByPriceBetween(50, 100));
+        priceDistribution.put("between100And150", productDao.countProductsByPriceBetween(100, 150));
+        priceDistribution.put("over200", productDao.countProductsByPriceGreaterThanEqual(200));
+        return priceDistribution;
+    }
+
+    public Map<String, Long> getProductCountByCategory() {
+        List<Object[]> result = productDao.getProductCountByCategory();
+
+        Map<String, Long> productCountByCategory = new HashMap<>();
+        for (Object[] row : result) {
+            String category = (String) row[0];
+            Long count = (Long) row[1];
+            productCountByCategory.put(category, count);
+        }
+        return productCountByCategory;
     }
 }

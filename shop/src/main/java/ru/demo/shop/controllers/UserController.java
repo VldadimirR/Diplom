@@ -15,6 +15,7 @@ import ru.demo.shop.services.OrderService;
 import ru.demo.shop.services.UserService;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -87,6 +88,12 @@ public class UserController {
 
         }
         return "page/userPage";
+    }
+
+    @GetMapping("/roles")
+    public ResponseEntity<Map<String, Integer>> getUsersByRole() {
+        Map<String, Integer> usersByRole = userService.getUsersByRole();
+        return ResponseEntity.ok(usersByRole);
     }
 
 }

@@ -18,6 +18,7 @@ import ru.demo.shop.services.ProductService;
 import ru.demo.shop.services.UserService;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/api/orders")
@@ -115,5 +116,23 @@ public class OrderController {
     @GetMapping("/thanks")
     public String getThankYouPage(){
         return "another/thank-you-page";
+    }
+
+    @GetMapping("/status")
+    public ResponseEntity<Map<String, Integer>> getOrderStatusCounts() {
+        Map<String, Integer> orderStatusCounts = orderService.getOrderStatusCounts();
+        return ResponseEntity.ok(orderStatusCounts);
+    }
+
+    @GetMapping("/count-by-date")
+    public ResponseEntity<?> getOrderCountByDate() {
+        Map<String, Long> orderCountByDate = orderService.getOrderCountByDate();
+        return ResponseEntity.ok(orderCountByDate);
+    }
+
+    @GetMapping("/count-by-user-auth-status")
+    public ResponseEntity<?> getOrderCountByUserAuthStatus() {
+        Map<String, Long> orderCountByUserAuth = orderService.getOrderCountByUserAuthStatus();
+        return ResponseEntity.ok(orderCountByUserAuth);
     }
 }

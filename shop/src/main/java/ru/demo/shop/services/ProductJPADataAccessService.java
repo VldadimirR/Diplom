@@ -83,5 +83,25 @@ public class ProductJPADataAccessService implements ProductDao {
         return productRepository.getAllCategory();
     }
 
+    @Override
+    public Integer countProductsByPriceLessThan(double price) {
+        return productRepository.countProductsByPriceLessThan(price);
+    }
+
+    @Override
+    public Integer countProductsByPriceBetween(double priceBy, double priceBetween) {
+        return productRepository.countProductsByPriceBetween(priceBy, priceBetween);
+    }
+
+    @Override
+    public Integer countProductsByPriceGreaterThanEqual(double price) {
+        return productRepository.countProductsByPriceGreaterThanEqual(price);
+    }
+
+    @Override
+    public List<Object[]> getProductCountByCategory() {
+        return productRepository.getProductCountByCategory();
+    }
+
 
 }

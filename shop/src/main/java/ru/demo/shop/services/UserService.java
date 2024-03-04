@@ -1,18 +1,19 @@
 package ru.demo.shop.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.security.core.Authentication;
-import ru.demo.shop.models.Role;
-import ru.demo.shop.request.UserUpdateRequest;
 import ru.demo.shop.dao.UserDao;
 import ru.demo.shop.exception.RequestValidationException;
 import ru.demo.shop.exception.UserNotFoundException;
+import ru.demo.shop.models.Role;
 import ru.demo.shop.models.User;
+import ru.demo.shop.request.UserUpdateRequest;
 
-
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -37,12 +38,10 @@ public class UserService {
     }
 
     public void addUser(User user) {
-        // Возможно, здесь вам также нужно выполнить дополнительные проверки или преобразования перед сохранением пользователя.
          userDao.insertUser(user);
     }
 
     public void updateUser(Long userId, UserUpdateRequest updateRequest) {
-        // Получаем существующего пользователя по его идентификатору
         User existingUser = userDao.selectUserById(userId)
                 .orElseThrow(() -> new UserNotFoundException(
                         "User with id " + userId + " not found"
@@ -50,7 +49,6 @@ public class UserService {
 
         boolean changes = false;
 
-        // Проверяем, были ли внесены изменения в данные пользователя
         if (updateRequest.firstname() != null && !updateRequest.firstname().equals(existingUser.getFirstname())) {
             existingUser.setFirstname(updateRequest.firstname());
             changes = true;
@@ -76,7 +74,6 @@ public class UserService {
             changes = true;
         }
 
-        // Если изменений не было, выбрасываем исключение с сообщением
         if (!changes) {
             throw new RequestValidationException("No data changes found");
         }
@@ -118,5 +115,17 @@ public class UserService {
 
     public boolean isEmailAlreadyInUse(String email) {
         return userDao.isEmailAlreadyInUse(email);
+    }
+
+    public Map<String, Integer> getUsersByRole() {
+        Map<String, Integer> usersByRole = new HashMap<>();
+
+        long adminCount = userDao.countByRole(Role.ROLE_ADMIN);
+        long userCount = userDao.countByRole(Role.ROLE_USER);
+
+        usersByRole.put("ROLE_ADMIN", (int) adminCount);
+        usersByRole.put("ROLE_USER", (int) userCount);
+
+        return usersByRole;
     }
 }
