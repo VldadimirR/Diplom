@@ -34,7 +34,7 @@
                         <span class="sr-only ">(current)</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark" th:if="${role == 'ROLE_ANONYMOUS'}" href="/auth/register">
+                    <a class="nav-link text-dark" th:if="${role == 'ROLE_ANONYMOUS'}" href="/auth/login">
                         Account <i class="fas fa-user"></i>
                     </a>
                     <a class="nav-link text-dark" th:if="${role != 'ROLE_ANONYMOUS'}" th:href="${role == 'ROLE_ADMIN' ? '/api/admin/adminPage' : '/api/users/userPage'}">

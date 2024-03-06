@@ -82,7 +82,7 @@ public class UserController {
 
             } else {
                 model.addAttribute("role", "ROLE_ANONYMOUS");
-                return "page/userPage";
+                return "index";
             }
         } catch (Exception e){
 

@@ -32,7 +32,7 @@
                         <span class="sr-only ">(current)</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark" th:if="${role == 'ROLE_ANONYMOUS'}" href="/auth/register">
+                    <a class="nav-link text-dark" th:if="${role == 'ROLE_ANONYMOUS'}" href="/auth/login">
                         Account <i class="fas fa-user"></i>
                     </a>
                     <a class="nav-link text-dark" th:if="${role != 'ROLE_ANONYMOUS'}" th:href="${role == 'ROLE_ADMIN' ? '/api/admin/adminPage' : '/api/users/userPage'}">
@@ -44,7 +44,7 @@
     </div>
 </nav>
 
-<div class='container'>
+<div class='container mb-5'>
     <div class="card mx-auto col-md-5 col-8 mt-3 p-0">
         <img class='mx-auto pic'
              src="https://c4.wallpaperflare.com/wallpaper/598/508/1011/coffee-spoon-cup-bag-wallpaper-preview.jpg"/>
@@ -67,21 +67,22 @@
             </div>
         </div>
         <div class=" footer text-center p-0">
-            <div class="col-lg-12 col-12 p-0">
+            <div id="confirmOrderButton" class="col-lg-12 col-12 p-0">
                 <form id="orderForm" action="api/orders/confirm-order" method="post">
                     <input type="hidden" name="userId" th:value="${userId}" />
                     <input type="hidden" name="phoneContact" id="hiddenPhone" />
                     <input type="hidden" name="productList" th:value="${productList}" />
                     <input type="hidden" name="status" th:value="${status}" />
                     <input type="hidden" name="totalAmount" th:value="${totalAmount}" />
-                    <a href="#" id="confirmOrderButton"><p class="order">Confirm Order</p></a>
-                    <button type="submit" id="submitButton" style="display: none;"></button>
+                    <a  href="#">
+                        <p  class="order">Confirm Order</p>
+                        <button type="submit" id="submitButton" style="display: none;">
+                        </button></a>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- Модальное окно подтверждения заказа -->
     <div id="confirmOrderModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>

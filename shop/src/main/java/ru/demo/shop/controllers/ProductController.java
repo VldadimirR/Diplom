@@ -11,9 +11,11 @@ import ru.demo.shop.exception.ProductNotFoundException;
 import ru.demo.shop.models.Product;
 import ru.demo.shop.models.Role;
 import ru.demo.shop.models.User;
+import ru.demo.shop.request.ProductUpdateRequest;
 import ru.demo.shop.services.ProductService;
 import ru.demo.shop.services.UserService;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -37,7 +39,8 @@ public class ProductController {
             @RequestParam(required = false) String sort,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String productName,
-            Model model) {
+            Model model,
+            Principal principal) {
 
         List<Product> products;
         List<String> categories = productService.getAllCategories();
@@ -62,19 +65,9 @@ public class ProductController {
         model.addAttribute("products", products);
         model.addAttribute("categories", categories);
 
-        try {
-            Optional<User> userOptional = userService.getCurrentUser();
-            if (userOptional.isPresent()) {
-                User user = userOptional.get();
-                model.addAttribute("user", user);
-                Role role = userService.getCurrentUserRole();
-                model.addAttribute("role", role != null ? role.toString() : "ROLE_ANONYMOUS");
-            } else {
-                model.addAttribute("role", "ROLE_ANONYMOUS");
-                return "catalog";
-            }
-        } catch (Exception e){
-        }
+
+       userService.setUserAndRoleAttributes(model,principal);
+
         return "catalog";
     }
 
@@ -93,7 +86,7 @@ public class ProductController {
     }
 
     @PutMapping("/{productId}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long productId, @RequestBody Product updatedProduct) {
+    public ResponseEntity<Product> updateProduct(@PathVariable Long productId, @RequestBody ProductUpdateRequest updatedProduct) {
         try {
             productService.updateProduct(productId, updatedProduct);
             return new ResponseEntity<>(HttpStatus.OK);

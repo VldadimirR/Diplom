@@ -250,3 +250,51 @@ $(document).ready(function() {
         });
     });
 });
+
+$(document).ready(function() {
+    $('#updateProductModal').on('show.bs.modal', function(event) {
+        let button = $(event.relatedTarget);
+        let productId = button.data('product-id');
+
+        $('#productIdInput').val(productId);
+    });
+
+    $('#updateProductForm').submit(function(event) {
+        event.preventDefault();
+
+        let productId = $('#productIdInput').val();
+
+        let newProductName = $('#newProductName').val();
+        let newProductDescription = $('#newProductDescription').val();
+        let newProductPrice = $('#newProductPrice').val();
+        let newProductCategory = $('#newProductCategory').val();
+
+        $.ajax({
+            type: 'PUT',
+            url: '/api/' + productId,
+            contentType: 'application/json',
+            data: JSON.stringify({
+                name: newProductName,
+                description: newProductDescription,
+                price: newProductPrice,
+                category: newProductCategory
+            }),
+            success: function(response) {
+
+                $('#updateProductModal').modal('hide');
+
+                toastr.success('Product updated successfully');
+
+                setTimeout(function() {
+                    location.reload();
+                }, 2500);
+
+            },
+            error: function(xhr, status, error) {
+
+                toastr.error('Error updating product:', xhr.responseText);
+
+            }
+        });
+    });
+});

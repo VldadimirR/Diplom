@@ -9,18 +9,15 @@
           integrity="sha384-5e2ESR8Ycmos6g3gAKr1Jvwye8sW4U1u/cAKulfVJnkakCcMqhOudbtPnvJ+nbv7" crossorigin="anonymous">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-
     <link rel="stylesheet" href="/css/catalog.css">
-
 </head>
-
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #fdfdfd; padding-top: 10px; padding-bottom: 10px;">
     <div class="container">
         <a class="navbar-brand mx-auto" href="/api/index">
-        <img src="/img/coffee-bean-roast-brew-svgrepo-com.svg" alt="Логотип" style="max-width: 100px; max-height: 50px;">
-    </a>
+            <img src="/img/coffee-bean-roast-brew-svgrepo-com.svg" alt="Логотип" style="max-width: 100px; max-height: 50px;">
+        </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -30,13 +27,14 @@
                     <a class="nav-link text-dark" href="/api/index">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-warning text-underline" href="#">Catalog<span class="sr-only ">(current)</span></a>
+                    <a class="nav-link text-warning text-underline" href="#">Catalog
+                        <span class="sr-only ">(current)</span></a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-dark" href="/cart"> Basket <i class="fas fa-shopping-basket"></i> </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark" th:if="${role == 'ROLE_ANONYMOUS'}" href="/auth/register">
+                    <a class="nav-link text-dark" th:if="${role == 'ROLE_ANONYMOUS'}" href="/auth/login">
                         Account <i class="fas fa-user"></i>
                     </a>
                     <a class="nav-link text-dark" th:if="${role != 'ROLE_ANONYMOUS'}" th:href="${role == 'ROLE_ADMIN' ? '/api/admin/adminPage' : '/api/users/userPage'}">

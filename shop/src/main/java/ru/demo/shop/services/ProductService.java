@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.demo.shop.dao.ProductDao;
 import ru.demo.shop.exception.ProductNotFoundException;
+import ru.demo.shop.exception.RequestValidationException;
 import ru.demo.shop.models.Product;
+import ru.demo.shop.request.ProductUpdateRequest;
 
 import java.util.*;
 
@@ -35,24 +37,41 @@ public class ProductService {
          productDao.insertProduct(product);
     }
 
-    public void updateProduct(Long productId, Product updatedProduct) {
-        Optional<Product> existingProductOptional = productDao.selectProductById(productId);
-        if (existingProductOptional.isPresent()) {
-            Product existingProduct = existingProductOptional.get();
+    public void updateProduct(Long productId, ProductUpdateRequest updateRequest) {
+        Product existingProduct = productDao.selectProductById(productId)
+                .orElseThrow(() -> new ProductNotFoundException(
+                        "Product with id " + productId + " not found"
+                ));
 
-            if (updatedProduct.getName() != null) {
-                existingProduct.setName(updatedProduct.getName());
-            } else if (updatedProduct.getDescription() != null) {
-                existingProduct.setDescription(updatedProduct.getDescription());
-            } else if (updatedProduct.getPrice() != null) {
-                existingProduct.setPrice(updatedProduct.getPrice());
-            }
+        boolean changes = false;
 
-            productDao.updateProduct(existingProduct);
-        } else {
-            throw new ProductNotFoundException("Product with id [%s] not found".formatted(productId));
+        if (updateRequest.name() != null && !updateRequest.name().equals(existingProduct.getName())) {
+            existingProduct.setName(updateRequest.name());
+            changes = true;
         }
+
+        if (updateRequest.description() != null && !updateRequest.description().equals(existingProduct.getDescription())) {
+            existingProduct.setDescription(updateRequest.description());
+            changes = true;
+        }
+
+        if (updateRequest.price() != null && !updateRequest.price().equals(existingProduct.getPrice())) {
+            existingProduct.setPrice(updateRequest.price());
+            changes = true;
+        }
+
+        if (updateRequest.category() != null && !updateRequest.category().equals(existingProduct.getCategory())) {
+            existingProduct.setCategory(updateRequest.category());
+            changes = true;
+        }
+
+        if (!changes) {
+            throw new RequestValidationException("No data changes found");
+        }
+
+        productDao.updateProduct(existingProduct);
     }
+
 
     public void deleteProduct(Long productId) {
         if(!productDao.existsProductWithId(productId)){

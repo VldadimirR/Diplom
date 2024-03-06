@@ -89,11 +89,53 @@
                 <td th:text="${product.price}">Product Price</td>
                 <td th:text="${product.category}">Product Category</td>
                 <td>
-                    <button type="button" class="btn btn-danger btn-sm m-0" th:id="'deleteProduct_' + ${product.id}">Delete</button>
+                    <div class="button mt-2 d-flex flex-row align-items-center">
+                        <button type="button" class="btn btn-danger btn-sm m-0" th:id="'deleteProduct_' + ${product.id}">Delete</button>
+                        <button class="btn btn-sm btn-primary w-100 ml-2"
+                                data-toggle="modal"
+                                data-target="#updateProductModal"
+                                th:attr="data-product-id=${product.id}">Edit</button>
+                    </div>
                 </td>
             </tr>
             </tbody>
         </table>
+
+        <!-- Модальное окно для обновления продукта -->
+        <div class="modal fade" id="updateProductModal" tabindex="-1" role="dialog" aria-labelledby="updateProductModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="updateProductModalLabel">Update Product</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="updateProductForm">
+                            <input type="hidden" id="productIdInput" name="productId">
+                            <div class="form-group">
+                                <label for="newProductName">New Name:</label>
+                                <input type="text" class="form-control" id="newProductName" name="newProductName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="newProductDescription">New Description:</label>
+                                <input type="text" class="form-control" id="newProductDescription" name="newProductDescription" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="newProductPrice">New Price:</label>
+                                <input type="text" class="form-control" id="newProductPrice" name="newProductPrice" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="newProductCategory">New Category:</label>
+                                <input type="text" class="form-control" id="newProductCategory" name="newProductCategory" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Update</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 
 

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import ru.demo.shop.dao.UserDao;
 import ru.demo.shop.exception.RequestValidationException;
 import ru.demo.shop.exception.UserNotFoundException;
@@ -11,6 +12,7 @@ import ru.demo.shop.models.Role;
 import ru.demo.shop.models.User;
 import ru.demo.shop.request.UserUpdateRequest;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,7 +80,6 @@ public class UserService {
             throw new RequestValidationException("No data changes found");
         }
 
-        // Обновляем пользователя в базе данных
         userDao.updateUser(existingUser);
     }
 
@@ -127,5 +128,23 @@ public class UserService {
         usersByRole.put("ROLE_USER", (int) userCount);
 
         return usersByRole;
+    }
+
+    public void setUserAndRoleAttributes(Model model, Principal principal) {
+        if (principal != null) {
+            try {
+                Optional<User> userOptional = getCurrentUser();
+                if (userOptional.isPresent()) {
+                    User user = userOptional.get();
+                    model.addAttribute("user", user);
+                    Role role = getCurrentUserRole();
+                    model.addAttribute("role", role != null ? role.toString() : "ROLE_ANONYMOUS");
+                }
+            } catch (Exception e) {
+
+            }
+        } else {
+            model.addAttribute("role", "ROLE_ANONYMOUS");
+        }
     }
 }

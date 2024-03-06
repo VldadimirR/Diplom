@@ -10,7 +10,7 @@ document.getElementById('displayedPhone').innerText = storedContactPhone;
 let form = document.getElementById('orderForm');
 
 document.getElementById("confirmOrderButton").addEventListener("click", function(event) {
-    event.preventDefault(); // Предотвращаем стандартное поведение ссылки
+    event.preventDefault();
 
     // Отображаем модальное окно подтверждения заказа
     document.getElementById("confirmOrderModal").style.display = "block";

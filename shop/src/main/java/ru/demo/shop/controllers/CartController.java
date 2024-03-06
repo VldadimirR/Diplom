@@ -14,6 +14,7 @@ import ru.demo.shop.models.User;
 import ru.demo.shop.services.ProductService;
 import ru.demo.shop.services.UserService;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,7 +31,7 @@ public class CartController {
 
 
     @GetMapping("/cart")
-    public String viewCart(Model model, HttpSession session) {
+    public String viewCart(Model model, HttpSession session, Principal principal) {
 
         List<String> cartItems = (List<String>) session.getAttribute("cart");
 
@@ -41,19 +42,7 @@ public class CartController {
             model.addAttribute("cartItems", Collections.emptyList());
         }
 
-        try {
-            Optional<User> userOptional = userService.getCurrentUser();
-            if (userOptional.isPresent()) {
-                User user = userOptional.get();
-                model.addAttribute("user", user);
-                Role role = userService.getCurrentUserRole();
-                model.addAttribute("role", role != null ? role.toString() : "ROLE_ANONYMOUS");
-            } else {
-                model.addAttribute("role", "ROLE_ANONYMOUS");
-                return "cart/cart";
-            }
-        } catch (Exception e){
-        }
+       userService.setUserAndRoleAttributes(model,principal);
 
         return "cart/cart";
     }
@@ -108,7 +97,7 @@ public class CartController {
     }
 
     @GetMapping("/checkout")
-    public String checkout(Model model, HttpSession session) {
+    public String checkout(Model model, HttpSession session, Principal principal) {
 
         List<String> cartItems = (List<String>) session.getAttribute("cart");
 
@@ -123,19 +112,7 @@ public class CartController {
         model.addAttribute("status", Status.CREATE);
 
 
-        try {
-            Optional<User> userOptional = userService.getCurrentUser();
-            if (userOptional.isPresent()) {
-                User user = userOptional.get();
-                model.addAttribute("user", user);
-                Role role = userService.getCurrentUserRole();
-                model.addAttribute("role", role != null ? role.toString() : "ROLE_ANONYMOUS");
-            } else {
-                model.addAttribute("role", "ROLE_ANONYMOUS");
-                return "cart/checkout";
-            }
-        } catch (Exception e){
-        }
+        userService.setUserAndRoleAttributes(model,principal);
 
         return "cart/checkout";
     }

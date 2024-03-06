@@ -97,9 +97,6 @@ $(document).ready(function() {
     });
 });
 
-
-
-
 function addToCart(button) {
     let productId = button.getAttribute("data-product-id");
 

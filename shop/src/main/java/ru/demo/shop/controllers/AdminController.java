@@ -35,28 +35,6 @@ public class AdminController {
         this.orderService = orderService;
     }
 
-    @GetMapping("/userPage")
-    public String getUserPage(Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
-            String username = authentication.getName();
-            Long userId = userService.getUserIdByUsername(username);
-            Optional<User> user = userService.getUser(userId);
-
-            model.addAttribute("user", user);
-
-            if (user.isPresent()) {
-                User userAuth = user.get();
-
-                List<Order> orders = orderService.getOrdersByUserId(userAuth.getId());
-                model.addAttribute("orders", orders);
-            } else {
-                // Обработка случая, когда пользователя нет в базе данных
-            }
-        }
-        return "page/userPage";
-    }
-
     @GetMapping("/adminPage")
     public String getAdminPage() {
 
