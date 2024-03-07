@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <link rel="stylesheet" href="/css/catalog.css">
+
 </head>
 <body>
 
@@ -94,7 +95,7 @@
 
 
         <div class="row" >
-            <div th:each="product : ${products}" class="col-md-4">
+            <div   th:each="product : ${products}" class="col-md-4">
                 <div class="product-card border-secondary">
                     <img src="https://images.unsplash.com/photo-1637029436347-e33bf98a5412?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Product Image" class="img-fluid product-img">
                     <div class="product-details">
@@ -108,8 +109,29 @@
             </div>
         </div>
 
+    <!-- Pagination -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center mt-3">
+            <li th:class="${currentPage == 0 ? 'page-item disabled' : 'page-item'}">
+                <a th:href="@{'/api/products?page=' + ${currentPage - 1}} " class="page-link text-dark">Previous</a>
+            </li>
+
+            <li th:each="pageNumber : ${#numbers.sequence(0, totalPages - 1)}" th:class="${currentPage == pageNumber ? 'page-item active' : 'page-item'}">
+                <a th:href="@{'/api/products?page=' + ${pageNumber}} " class="page-link text-dark" th:text="${pageNumber + 1}"></a>
+            </li>
+
+            <li th:class="${currentPage == totalPages - 1 ? 'page-item disabled' : 'page-item'}">
+                <a th:href="@{'/api/products?page=' + ${currentPage + 1}} " class="page-link text-dark">Next</a>
+            </li>
+        </ul>
+    </nav>
+
+
+
+
+
 </div>
-    
+
 <div class=" footer">
     <div class="container">
         <footer class="mt-5">

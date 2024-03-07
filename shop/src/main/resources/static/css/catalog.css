@@ -119,3 +119,8 @@ a:hover {
     background-color: #dc3545;
     color: #fff;
 }
+
+.page-item.active .page-link{
+    background-color: #FFA000;
+    border-color: #FFA000;
+}

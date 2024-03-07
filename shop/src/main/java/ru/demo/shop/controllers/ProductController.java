@@ -2,6 +2,7 @@ package ru.demo.shop.controllers;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -39,12 +40,13 @@ public class ProductController {
             @RequestParam(required = false) String sort,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String productName,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size,
             Model model,
             Principal principal) {
 
         List<Product> products;
         List<String> categories = productService.getAllCategories();
-
 
         if (productName != null && !productName.isEmpty()) {
             products = productService.getProductBySearch(productName);
@@ -62,15 +64,19 @@ public class ProductController {
             }
         }
 
-        model.addAttribute("products", products);
+        List<Product> pageProducts = productService.getPage(products, page, size);
+
+        model.addAttribute("products", pageProducts);
         model.addAttribute("categories", categories);
 
+        model.addAttribute("currentPage", page);
+        model.addAttribute("pageSize", size);
+        model.addAttribute("totalPages", productService.getTotalPages(products.size(), size));
 
-       userService.setUserAndRoleAttributes(model,principal);
+        userService.setUserAndRoleAttributes(model, principal);
 
         return "catalog";
     }
-
 
     @GetMapping("/{productId}")
     public ResponseEntity<Product> getProductById(@PathVariable Long productId) {

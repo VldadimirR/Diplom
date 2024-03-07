@@ -298,3 +298,35 @@ $(document).ready(function() {
         });
     });
 });
+
+$(document).ready(function() {
+    $('[id^="delete-order-button_"]').click(function() {
+        let orderId = this.id.split('_')[1];
+        cancelOrder(orderId);
+    });
+});
+
+function cancelOrder(orderId) {
+    if (confirm('Are you sure you want to cancel this order?')) {
+        let url = "/api/orders";
+        let headers = {};
+        $.ajax({
+            type: 'DELETE',
+            url: url + '/' + orderId,
+            headers: headers,
+            success: function(response) {
+                toastr.success('Заказ успешно отменен');
+                setTimeout(function() {
+                    location.reload();
+                }, 2500);
+            },
+            error: function(xhr, status, error) {
+                if (xhr.status === 404) {
+                    toastr.error('Ошибка при отмене Заказа: ' + xhr.responseText);
+                } else {
+                    toastr.error("An error occurred while cancel the order. Please try again later." + xhr.responseText);
+                }
+            }
+        });
+    }
+}

@@ -48,6 +48,7 @@ $(document).ready(function(){
         let currentUrl = new URL(window.location.href);
 
         currentUrl.searchParams.delete("productName");
+        currentUrl.searchParams.set("page", "0");
 
         currentUrl.searchParams.set("category", selectedCategory);
 
@@ -63,6 +64,8 @@ $(document).ready(function(){
 
         currentUrl.searchParams.delete("sort");
         currentUrl.searchParams.delete("category");
+        currentUrl.searchParams.set("page", "0");
+
 
         currentUrl.searchParams.set("productName", productName);
 

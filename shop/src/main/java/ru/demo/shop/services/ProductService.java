@@ -2,11 +2,14 @@ package ru.demo.shop.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.demo.shop.dao.ProductDao;
 import ru.demo.shop.exception.ProductNotFoundException;
 import ru.demo.shop.exception.RequestValidationException;
 import ru.demo.shop.models.Product;
+import ru.demo.shop.repositories.ProductRepository;
 import ru.demo.shop.request.ProductUpdateRequest;
 
 import java.util.*;
@@ -168,4 +171,15 @@ public class ProductService {
         }
         return productCountByCategory;
     }
+
+    public List<Product> getPage(List<Product> products, int page, int size) {
+        int startIndex = page * size;
+        int endIndex = Math.min(startIndex + size, products.size());
+        return products.subList(startIndex, endIndex);
+    }
+
+    public int getTotalPages(int totalItems, int size) {
+        return (int) Math.ceil((double) totalItems / size);
+    }
+
 }
