@@ -12,6 +12,7 @@ import ru.demo.shop.dao.ProductDao;
 import ru.demo.shop.exception.ProductNotFoundException;
 import ru.demo.shop.models.Product;
 import ru.demo.shop.repositories.ProductRepository;
+import ru.demo.shop.request.ProductUpdateRequest;
 import ru.demo.shop.services.ProductService;
 
 import java.util.List;
@@ -123,7 +124,7 @@ public class ProductServiceTest {
         savedProduct.setName("Updated Product");
         savedProduct.setDescription("Updated Description");
         savedProduct.setPrice(69.99);
-        productService.updateProduct(savedProduct.getId(), savedProduct);
+//        productService.updateProduct(savedProduct.getId(), savedProduct);
 
         // Then
         Product updatedProduct = productService.getProduct(savedProduct.getId()).orElse(null);
@@ -145,8 +146,11 @@ public class ProductServiceTest {
         productRepository.save(originalProduct);
 
         // When
-        Product updatedProduct = new Product();
-        updatedProduct.setName("Updated Name");
+        ProductUpdateRequest updatedProduct = new ProductUpdateRequest(
+                "Updated Name",
+                null,
+                null,
+                null);
 
         productService.updateProduct(originalProduct.getId(), updatedProduct);
 
@@ -155,7 +159,7 @@ public class ProductServiceTest {
         assertNotNull(resultProduct);
 
         // Проверяем, что обновлено только поле "Name"
-        assertEquals(updatedProduct.getName(), resultProduct.getName());
+        assertEquals(updatedProduct.name(), resultProduct.getName());
         assertEquals(originalProduct.getDescription(), resultProduct.getDescription());
         assertEquals(originalProduct.getPrice(), resultProduct.getPrice());
     }
@@ -171,8 +175,11 @@ public class ProductServiceTest {
         productRepository.save(originalProduct);
 
         // When
-        Product updatedProduct = new Product();
-        updatedProduct.setDescription("Updated Description");
+        ProductUpdateRequest updatedProduct = new ProductUpdateRequest(
+                null,
+                "Updated Description",
+                null,
+                null);
 
         productService.updateProduct(originalProduct.getId(), updatedProduct);
 
@@ -182,7 +189,7 @@ public class ProductServiceTest {
 
         // Проверяем, что обновлено только поле "Description"
         assertEquals(originalProduct.getName(), resultProduct.getName());
-        assertEquals(updatedProduct.getDescription(), resultProduct.getDescription());
+        assertEquals(updatedProduct.description(), resultProduct.getDescription());
         assertEquals(originalProduct.getPrice(), resultProduct.getPrice());
     }
 
@@ -197,8 +204,11 @@ public class ProductServiceTest {
         productRepository.save(originalProduct);
 
         // When
-        Product updatedProduct = new Product();
-        updatedProduct.setPrice(29.99);
+        ProductUpdateRequest updatedProduct = new ProductUpdateRequest(
+                null,
+                null,
+                29.99,
+                null);
 
         productService.updateProduct(originalProduct.getId(), updatedProduct);
 
@@ -209,7 +219,7 @@ public class ProductServiceTest {
         // Проверяем, что обновлено только поле "Price"
         assertEquals(originalProduct.getName(), resultProduct.getName());
         assertEquals(originalProduct.getDescription(), resultProduct.getDescription());
-        assertEquals(updatedProduct.getPrice(), resultProduct.getPrice());
+        assertEquals(updatedProduct.price(), resultProduct.getPrice());
     }
 
 

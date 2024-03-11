@@ -90,19 +90,17 @@ function removeFromCart(button) {
 function removeFromAllCart(button) {
     let productId = button.getAttribute("data-product-id");
 
-    // Открытие модального окна подтверждения удаления
     openConfirmDeleteModal();
 
-    // Обработчик кнопки "Да"
     document.getElementById("confirmDeleteButton").addEventListener("click", function() {
-        // При нажатии "Да" выполняется удаление
+
         $.ajax({
             url: '/removeAllByFromCart',
             type: 'POST',
             data: { productId: productId },
             success: function(response) {
                 console.log(response);
-                location.reload(); // Перезагрузка страницы после успешного удаления
+                location.reload();
             },
             error: function(error) {
                 console.error(error);
@@ -113,46 +111,45 @@ function removeFromAllCart(button) {
         closeConfirmDeleteModal();
     });
 
-    // Обработчик кнопки "Отмена"
+
     document.getElementById("cancelDeleteButton").addEventListener("click", function() {
-        // При нажатии "Отмена" ничего не происходит
+
         console.log("Cancelled");
-        // Закрываем модальное окно
+
         closeConfirmDeleteModal();
     });
 }
 
-// Открытие модального окна
+
 function openConfirmDeleteModal() {
     var modal = document.getElementById("confirmDeleteModal");
     modal.style.display = "block";
 }
 
-// Закрытие модального окна
+
 function closeConfirmDeleteModal() {
     var modal = document.getElementById("confirmDeleteModal");
     modal.style.display = "none";
 }
 
-// Обработчики кнопок "Да" и "Отмена"
+
 document.getElementById("confirmDeleteButton").addEventListener("click", function() {
-    // При нажатии "Да" выполняется удаление
+
     console.log("Deleting...");
-    // Закрываем модальное окно
+
     closeConfirmDeleteModal();
 });
 
 document.getElementById("cancelDeleteButton").addEventListener("click", function() {
     // При нажатии "Отмена" ничего не происходит
     console.log("Cancelled");
-    // Закрываем модальное окно
+
     closeConfirmDeleteModal();
 });
 
-// Обработчик кнопки "Отмена" в модальном окне
 document.getElementsByClassName("close")[0].addEventListener("click", function() {
-    // При нажатии крестика модальное окно также закрывается
+
     console.log("Cancelled");
-    // Закрываем модальное окно
+
     closeConfirmDeleteModal();
 });

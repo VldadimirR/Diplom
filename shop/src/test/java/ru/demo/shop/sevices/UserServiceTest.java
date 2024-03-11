@@ -4,16 +4,19 @@ package ru.demo.shop.sevices;
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
+import ru.demo.shop.models.Role;
 import ru.demo.shop.request.UserUpdateRequest;
 import ru.demo.shop.dao.UserDao;
 import ru.demo.shop.exception.UserNotFoundException;
 import ru.demo.shop.models.User;
 import ru.demo.shop.repositories.UserRepository;
+import ru.demo.shop.services.UserJPADataAccessService;
 import ru.demo.shop.services.UserService;
 
 import java.util.List;
@@ -33,6 +36,9 @@ public class UserServiceTest {
     private UserDao userDao;
 
     @Autowired
+    private UserJPADataAccessService jpaDataAccessService;
+
+    @Autowired
     private UserService userService;
 
     @Autowired
@@ -42,8 +48,20 @@ public class UserServiceTest {
     @Test
     public void testGetAllUsers() {
         // Given
-        User user1 = new User("JohnDoe", "John Doe");
-        User user2 = new User("JaneSmith", "Jane Smith");
+        User user1 = new User("User1",
+                "user1@example.com",
+                "123456789",
+                "Address1",
+                "password",
+                Role.ROLE_USER);
+
+        User user2 = new User(
+                "User2",
+                "user2@example.com",
+                "987654321",
+                "Address2",
+                "password",
+                Role.ROLE_USER);
 
         userRepository.saveAll(List.of(user1,user2));
 
@@ -58,7 +76,12 @@ public class UserServiceTest {
     @Test
     public void testGetUserById(){
         // Given
-        User user1 = new User("JohnDoe", "John Doe");
+        User user1 = new User("User1",
+                "user1@example.com",
+                "123456789",
+                "Address1",
+                "password",
+                Role.ROLE_USER);
         User saveUser = userRepository.save(user1);
 
         // When
@@ -84,28 +107,23 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testAddUser() {
-        // Given
-        User user = new User("NewUser", "New User");
-
-        // When
-        userService.addUser(user);
-
-        // Then
-        User addedUser = userService.getUser(user.getId()).orElse(null);
-
-        assertNotNull(addedUser);
-        assertEquals("NewUser", addedUser.getUsername());
-        assertEquals("New User", addedUser.getFullName());
-    }
-
-    @Test
     public void testUpdateUser(){
         // Given
-        User user = new User("NewUser", "New User");
+        User user = new User("User1",
+                "user1@example.com",
+                "123456789",
+                "Address1",
+                "password",
+                Role.ROLE_USER);
         User saveUser = userRepository.save(user);
 
-        UserUpdateRequest userUpdateRequest = new UserUpdateRequest("UpdateUser", "Update User");
+        UserUpdateRequest userUpdateRequest = new UserUpdateRequest(
+                "UpdateUser",
+                "userUpdate@example.com",
+                "345345345",
+                "new Address",
+                Role.ROLE_USER
+                );
 
         // When
 
@@ -114,18 +132,29 @@ public class UserServiceTest {
         // Then
         User updateUser = userService.getUser(user.getId()).orElse(null);
         assertNotNull(updateUser);
-        assertEquals(userUpdateRequest.fullName(), updateUser.getFullName());
-        assertEquals(userUpdateRequest.username(), updateUser.getUsername());
+        assertEquals(userUpdateRequest.firstname(), updateUser.getFirstname());
+        assertEquals(userUpdateRequest.email(), updateUser.getEmail());
     }
 
     @Test
-    public void testUpdateUserWithOnlyUsername(){
+    public void testUpdateUserWithOnlyFirstname(){
         // Given
-        User user = new User("NewUser", "New User");
+        User user = new User("User1",
+                "user1@example.com",
+                "123456789",
+                "Address1",
+                "password",
+                Role.ROLE_USER);
         User saveUser = userRepository.save(user);
 
         // When
-        UserUpdateRequest userUpdateRequest = new UserUpdateRequest("UpdateUser", "Update User");
+        UserUpdateRequest userUpdateRequest = new UserUpdateRequest(
+                "UpdateUser",
+                "user1@example.com",
+                "345345345",
+                "new Address",
+                Role.ROLE_USER
+        );
         userService.updateUser(saveUser.getId(),userUpdateRequest);
 
         // Then
@@ -133,19 +162,30 @@ public class UserServiceTest {
         assertNotNull(updateUser);
 
         // Проверяем, что обновлено только поле "Username"
-        assertEquals(user.getFullName(), updateUser.getFullName());
-        assertEquals(userUpdateRequest.username(), updateUser.getUsername());
+        assertEquals(user.getFirstname(), updateUser.getFirstname());
+        assertEquals(userUpdateRequest.email(), updateUser.getEmail());
     }
 
 
     @Test
-    public void testUpdateUserWithOnlyFullName(){
+    public void testUpdateUserWithOnlyEmail(){
         // Given
-        User user = new User("NewUser", "New User");
+        User user = new User("User1",
+                "user1@example.com",
+                "123456789",
+                "Address1",
+                "password",
+                Role.ROLE_USER);
         User saveUser = userRepository.save(user);
 
         // When
-        UserUpdateRequest userUpdateRequest = new UserUpdateRequest("UpdateUser", "Update User");
+        UserUpdateRequest userUpdateRequest = new UserUpdateRequest(
+                "UpdateUser",
+                "user1@example.com",
+                "345345345",
+                "new Address",
+                Role.ROLE_USER
+        );
         userService.updateUser(saveUser.getId(),userUpdateRequest);
 
         // Then
@@ -153,7 +193,7 @@ public class UserServiceTest {
         assertNotNull(updateUser);
 
         // Проверяем, что обновлено только поле "FullName"
-        assertEquals(userUpdateRequest.fullName(), updateUser.getFullName());
+        assertEquals(userUpdateRequest.firstname(), updateUser.getFirstname());
         assertEquals(user.getUsername(), updateUser.getUsername());
     }
 
@@ -162,7 +202,12 @@ public class UserServiceTest {
     @Test
     public void testDeleteUser() {
         // Given
-        User user = new User("NewUser", "New User");
+        User user = new User("User1",
+                "user1@example.com",
+                "123456789",
+                "Address1",
+                "password",
+                Role.ROLE_USER);
         User savedUser = userRepository.save(user);
 
         // When

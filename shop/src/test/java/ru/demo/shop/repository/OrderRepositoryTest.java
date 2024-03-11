@@ -6,14 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.demo.shop.models.Order;
-import ru.demo.shop.models.Product;
-import ru.demo.shop.models.User;
+import ru.demo.shop.models.*;
 import ru.demo.shop.repositories.OrderRepository;
 import ru.demo.shop.repositories.ProductRepository;
 import ru.demo.shop.repositories.UserRepository;
 
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -32,11 +31,13 @@ public class OrderRepositoryTest {
 
     @Test
     public void testExistsOrderById() {
-        // Given
-        User user = new User();
-        user.setUsername("TestUser");
-        user.setFullName("test user");
-        userRepository.save(user);
+        User user = new User("User1",
+                "user1@example.com",
+                "123456789",
+                "Address1",
+                "password",
+                Role.ROLE_USER);
+        User saveUser = userRepository.save(user);
 
         Product product = new Product();
         product.setName("TestProduct");
@@ -46,12 +47,12 @@ public class OrderRepositoryTest {
 
         Order order = new Order();
         order.setUserId(user.getId());
-        order.setProductIds(Collections.singletonList(product.getId()));
-        order.setDeliveryAddress("Test Address");
-        order.setTotalAmount(29.99);
-        order.setStatus("Pending");
+        order.setOrderItems(List.of(new OrderItem()));
+        order.setPhoneContact("89000004545");
+        order.setTotalAmount(19.99);
+        order.setStatus(Status.CREATE);
 
-        orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
 
         // When
         boolean exists = orderRepository.existsOrderById(order.getId());

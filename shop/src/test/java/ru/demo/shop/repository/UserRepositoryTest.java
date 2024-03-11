@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import ru.demo.shop.models.Role;
 import ru.demo.shop.models.User;
 import ru.demo.shop.repositories.UserRepository;
 
@@ -22,12 +23,13 @@ public class UserRepositoryTest {
 
     @Test
     public void testExistsUserById() {
-        // Given
-        User user = new User();
-        user.setUsername("TestUser");
-        user.setFullName("test user");
-
-        userRepository.save(user);
+        User user = new User("User1",
+                "user1@example.com",
+                "123456789",
+                "Address1",
+                "password",
+                Role.ROLE_USER);
+        User saveUser = userRepository.save(user);
 
         // When
         boolean exists = userRepository.existsUserById(user.getId());
