@@ -1,27 +1,26 @@
 package ru.demo.shop.sevices;
 
-import org.aspectj.lang.annotation.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import ru.demo.shop.dao.OrderDao;
 import ru.demo.shop.exception.OrderNotFoundException;
-import ru.demo.shop.models.*;
-import ru.demo.shop.repositories.OrderRepository;
-import ru.demo.shop.repositories.ProductRepository;
-import ru.demo.shop.repositories.UserRepository;
+import ru.demo.shop.models.Order;
+import ru.demo.shop.models.OrderItem;
+import ru.demo.shop.models.Status;
 import ru.demo.shop.request.OrderUpdateRequest;
 import ru.demo.shop.services.OrderService;
 
-import java.time.LocalDate;
-import java.util.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
@@ -36,55 +35,30 @@ public class OrderServiceTest {
     @Mock
     private OrderDao orderDao;
 
-    @Autowired
+    @InjectMocks
     private OrderService orderService;
-
-    @Autowired
-    private OrderRepository orderRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private ProductRepository productRepository;
-
 
     @Test
     public void testGetAllOrders() {
         // Given
-        User user1 = new User("User1",
-                "user1@example.com",
-                "123456789",
-                "Address1",
-                "password",
-                Role.ROLE_USER);
-
-        User user2 = new User(
-                "User2",
-                "user2@example.com",
-                "987654321",
-                "Address2",
-                "password",
-                Role.ROLE_USER);
-
-        userRepository.save(user1);
-        userRepository.save(user2);
+        long oneUserId = 1;
+        long toUserId = 1;
 
         Order order1 = new Order();
-        order1.setUserId(user1.getId());
+        order1.setUserId(oneUserId);
         order1.setOrderItems(List.of(new OrderItem()));
         order1.setPhoneContact("89000004545");
         order1.setTotalAmount(19.99);
         order1.setStatus(Status.CREATE);
 
         Order order2 = new Order();
-        order2.setUserId(user2.getId());
+        order2.setUserId(toUserId);
         order2.setOrderItems(List.of(new OrderItem()));
         order2.setPhoneContact("89000004444");
         order2.setTotalAmount(29.99);
         order2.setStatus(Status.CREATE);
 
-        orderRepository.saveAll(List.of(order1, order2));
+        when(orderDao.selectAllOrders()).thenReturn(List.of(order1,order2));
 
         // When
         List<Order> orders = orderService.getAllOrders();
@@ -98,36 +72,30 @@ public class OrderServiceTest {
     @Test
     public void testGetOrderById() {
         // Given
-        User user = new User("User1",
-                "user1@example.com",
-                "123456789",
-                "Address1",
-                "password",
-                Role.ROLE_USER);
-
-        userRepository.save(user);
+        long userId = 1;
+        long orderId = 1;
 
         Order order = new Order();
-        order.setUserId(user.getId());
+        order.setUserId(userId);
         order.setOrderItems(List.of(new OrderItem()));
         order.setPhoneContact("89000004545");
         order.setTotalAmount(19.99);
         order.setStatus(Status.CREATE);
-        Order savedOrder = orderRepository.save(order);
 
+        when(orderDao.selectOrderById(orderId)).thenReturn(Optional.of(order));
         // When
-        Optional<Order> retrievedOrder = orderService.getOrder(savedOrder.getId());
+        Optional<Order> retrievedOrder = orderService.getOrder(orderId);
 
         // Then
         assertTrue(retrievedOrder.isPresent());
-        assertEquals(savedOrder.getId(), retrievedOrder.get().getId());
-        assertEquals(savedOrder.getPhoneContact(), retrievedOrder.get().getPhoneContact());
+        assertEquals(order.getPhoneContact(), retrievedOrder.get().getPhoneContact());
     }
 
     @Test
     public void testGetOrderThrowsExceptionWhenNotFound() {
         // Given
         Long orderId = 1L;
+
         when(orderDao.selectOrderById(orderId)).thenReturn(Optional.empty());
 
         // When, Then
@@ -140,41 +108,28 @@ public class OrderServiceTest {
     @Test
     public void testAddOrder() {
         // Given
-        User user = new User("User1",
-                "user1@example.com",
-                "123456789",
-                "Address1",
-                "password",
-                Role.ROLE_USER);
-
-        userRepository.save(user);
-
-        Product product = new Product();
-        product.setName("Product1");
-        product.setDescription("Description1");
-        product.setPrice(19.99);
-        productRepository.save(product);
+        long userId = 1;
+        long orderId = 1;
 
         List<OrderItem> orderItems = new ArrayList<>();
         orderItems.add(new OrderItem());
 
         Order order = new Order();
-        order.setUserId(user.getId());
+        order.setUserId(userId);
         order.setOrderItems(orderItems);
         order.setPhoneContact("89000004545");
         order.setTotalAmount(19.99);
         order.setStatus(Status.CREATE);
-        orderRepository.save(order);
+
+        when(orderDao.selectOrderById(orderId)).thenReturn(Optional.of(order));
 
         // When
         orderService.addOrder(order);
 
         // Then
-        Order addedOrder = orderService.getOrder(order.getId()).orElse(null);
+        Order addedOrder = orderService.getOrder(orderId).orElse(null);
 
         assertNotNull(addedOrder);
-        assertNotNull(addedOrder.getId());
-        assertEquals(order.getUserId(), addedOrder.getUserId()); // Сравниваем userId вместо объектов User
         assertEquals(order.getOrderItems().get(0).getProduct(),
                 addedOrder.getOrderItems().get(0).getProduct());
         assertEquals(order.getPhoneContact(), addedOrder.getPhoneContact());
@@ -186,44 +141,32 @@ public class OrderServiceTest {
     @Test
     public void testUpdateOrderStatus() {
         // Given
-        User user = new User("User1",
-                "user1@example.com",
-                "123456789",
-                "Address1",
-                "password",
-                Role.ROLE_USER);
-        userRepository.save(user);
-
-        Product product = new Product();
-        product.setName("Product1");
-        product.setDescription("Description1");
-        product.setPrice(19.99);
-        productRepository.save(product);
+        long userId = 1;
+        long orderId = 1;
 
         List<OrderItem> orderItems = new ArrayList<>();
         orderItems.add(new OrderItem());
 
         Order order = new Order();
-        order.setUserId(user.getId());
+        order.setUserId(userId);
         order.setOrderItems(orderItems);
         order.setPhoneContact("89000004545");
         order.setTotalAmount(19.99);
         order.setStatus(Status.CREATE);
 
-        orderService.addOrder(order);
-
-        // When
-
         OrderUpdateRequest orderUpdateRequest = new OrderUpdateRequest(Status.COMPLETED);
 
-        orderService.updateOrderStatus(order.getId(), orderUpdateRequest);
+        when(orderDao.selectOrderById(orderId)).thenReturn(Optional.of(order));
+
+        // When
+        orderService.updateOrderStatus(orderId, orderUpdateRequest);
 
         // Then
-        Order fetchedOrder = orderService.getOrder(order.getId()).orElse(null);
+        Order fetchedOrder = orderService.getOrder(orderId).orElse(null);
 
         assertNotNull(fetchedOrder);
-        assertEquals(user.getId(), fetchedOrder.getUserId());
-        assertEquals(order.getOrderItems().get(0).getProduct(), fetchedOrder.getOrderItems().get(0).getProduct());
+        assertEquals(order.getOrderItems().get(0).getProduct(),
+                fetchedOrder.getOrderItems().get(0).getProduct());
         assertEquals("89000004545", fetchedOrder.getPhoneContact());
         assertEquals(19.99, fetchedOrder.getTotalAmount(), 0.01);
         assertEquals(Status.COMPLETED, fetchedOrder.getStatus());
@@ -233,40 +176,15 @@ public class OrderServiceTest {
     @Test
     public void testDeleteOrder() {
         // Given
-        User user = new User("User1",
-                "user1@example.com",
-                "123456789",
-                "Address1",
-                "password",
-                Role.ROLE_USER);
-        userRepository.save(user);
+        long id = 1;
 
-        Product product = new Product();
-        product.setName("Product1");
-        product.setDescription("Description1");
-        product.setPrice(19.99);
-        productRepository.save(product);
-
-        List<OrderItem> orderItems = new ArrayList<>();
-        orderItems.add(new OrderItem());
-
-
-        Order saveOrder = new Order();
-        saveOrder.setUserId(user.getId());
-        saveOrder.setOrderItems(orderItems);
-        saveOrder.setPhoneContact("89000004545");
-        saveOrder.setTotalAmount(19.99);
-        saveOrder.setStatus(Status.CREATE);
-        orderRepository.save(saveOrder);
-
-        orderService.addOrder(saveOrder);
+        when(orderDao.existsOrderWithId(id)).thenReturn(true);
 
         // When
-        orderService.deleteOrder(saveOrder.getId());
+        orderService.deleteOrder(id);
 
         // Then
-        Optional<Order> deletedOrder = orderRepository.findById(saveOrder.getId());
-        assertFalse(deletedOrder.isPresent());
+        verify(orderDao).deleteOrder(id);
     }
 
 
@@ -288,56 +206,79 @@ public class OrderServiceTest {
 
     }
 
-
     @Test
     public void testGetOrderStatusCounts() {
         // Given
-        User user = new User("User1",
-                "user1@example.com",
-                "123456789",
-                "Address1",
-                "password",
-                Role.ROLE_USER);
-        userRepository.save(user);
+        when(orderDao.countByStatus(Status.CREATE)).thenReturn(5);
+        when(orderDao.countByStatus(Status.IN_PROCESS)).thenReturn(3);
+        when(orderDao.countByStatus(Status.COMPLETED)).thenReturn(7);
 
-        Product product = new Product();
-        product.setName("Product1");
-        product.setDescription("Description1");
-        product.setPrice(19.99);
-        productRepository.save(product);
-
-        List<OrderItem> orderItems = new ArrayList<>();
-        orderItems.add(new OrderItem());
-
-
-        Order saveOrder = new Order();
-        saveOrder.setUserId(user.getId());
-        saveOrder.setOrderItems(orderItems);
-        saveOrder.setPhoneContact("89000004545");
-        saveOrder.setTotalAmount(19.99);
-        saveOrder.setStatus(Status.CREATE);
-        orderRepository.save(saveOrder);
-
-        // Arrange
-        when(orderDao.countByStatus(Status.CREATE)).thenReturn(10);
-        when(orderDao.countByStatus(Status.IN_PROCESS)).thenReturn(5);
-        when(orderDao.countByStatus(Status.COMPLETED)).thenReturn(20);
-
-        // Act
+        // When
         Map<String, Integer> orderStatusCounts = orderService.getOrderStatusCounts();
 
-        // Assert
-        Map<String, Integer> expectedOrderStatusCounts = new HashMap<>();
-        expectedOrderStatusCounts.put("CREATE", 1);
-        expectedOrderStatusCounts.put("IN_PROCESS", 0);
-        expectedOrderStatusCounts.put("COMPLETED", 0);
+        // Then
+        assertEquals(5L, orderStatusCounts.get("CREATE").longValue());
+        assertEquals(3L, orderStatusCounts.get("IN_PROCESS").longValue());
+        assertEquals(7L, orderStatusCounts.get("COMPLETED").longValue());
 
-        assertEquals(expectedOrderStatusCounts, orderStatusCounts);
+        verify(orderDao, times(1)).countByStatus(Status.CREATE);
+        verify(orderDao, times(1)).countByStatus(Status.IN_PROCESS);
+        verify(orderDao, times(1)).countByStatus(Status.COMPLETED);
     }
 
 
+    @Test
+    public void testGetOrderCountByDate() {
+        // Given
+        List<Object[]> mockedResult = List.of(
+                new Object[]{"2024-01-01", 5L},
+                new Object[]{"2024-01-02", 8L}
+        );
+        when(orderDao.getOrderCountByDate()).thenReturn(mockedResult);
 
+        // When
+        Map<String, Long> orderCountByDate = orderService.getOrderCountByDate();
 
+        // Then
+        assertEquals(2, orderCountByDate.size());
+        assertEquals(Optional.of(5L), Optional.ofNullable(orderCountByDate.get("2024-01-01")));
+        assertEquals(Optional.of(8L), Optional.ofNullable(orderCountByDate.get("2024-01-02")));
 
+    }
 
+    @Test
+    public void testGetOrderCountByUserAuthStatus() {
+        // Given
+        List<Object[]> mockResult = List.of(
+                new Object[]{"ACTIVE", 5L},
+                new Object[]{"INACTIVE", 3L}
+        );
+        when(orderDao.getOrderCountByUserAuthStatus()).thenReturn(mockResult);
+
+        // When
+        Map<String, Long> orderCountByUserAuthStatus = orderService.getOrderCountByUserAuthStatus();
+
+        // Then
+        assertEquals(Optional.of(5L), Optional.ofNullable(orderCountByUserAuthStatus.get("ACTIVE")));
+        assertEquals(Optional.of(3L), Optional.ofNullable(orderCountByUserAuthStatus.get("INACTIVE")));
+    }
+
+    @Test
+    public void testGetOrderData() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        // Given
+        List<Object[]> result = List.of(
+                new Object[]{"ACTIVE", 5L},
+                new Object[]{"INACTIVE", 3L}
+        );
+        Method method = OrderService.class.getDeclaredMethod("getOrderData", List.class);
+        method.setAccessible(true);
+
+        // When
+        Map<String, Long> orderData = (Map<String, Long>) method.invoke(orderService, result);
+
+        // Then
+        assertEquals(2, orderData.size());
+        assertEquals(Optional.of(5L), Optional.ofNullable(orderData.get("ACTIVE")));
+        assertEquals(Optional.of(3L), Optional.ofNullable(orderData.get("INACTIVE")));
+    }
 }

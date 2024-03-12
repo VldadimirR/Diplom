@@ -130,13 +130,6 @@ public class ProductService {
         return productList;
     }
 
-    public double calculateTotalCost(Long productId, int quantity) {
-        Product product = productDao.selectProductById(productId)
-                .orElseThrow(() -> new NoSuchElementException("Product not found with ID: " + productId));
-
-        return product.getPrice() * quantity;
-    }
-
     public double getTotalAmount(List<Product> productList) {
         double totalAmount = 0.0;
 

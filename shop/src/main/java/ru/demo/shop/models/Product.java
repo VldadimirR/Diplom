@@ -1,11 +1,19 @@
 package ru.demo.shop.models;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.lang.NonNull;
 
 import java.util.List;
 import java.util.Objects;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "product")
 public class Product {
@@ -26,9 +34,6 @@ public class Product {
     @Transient
     private Integer quantity;
 
-    public Product() {
-    }
-
     public Product(String name, String description, Double price, String category) {
         this.name = name;
         this.description = description;
@@ -36,76 +41,21 @@ public class Product {
         this.category = category;
     }
 
-    public Integer getQuantity() {
-        return quantity;
+    public Product(long l, String product1, String description1, double v, String category1, int i) {
+        this.id = l;
+        this.name = product1;
+        this.description = description1;
+        this.price = v;
+        this.category = category1;
+        this.quantity = i;
     }
 
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
+    public Product(long l, String product1, String description1, double v, String category1) {
+        this.id = l;
+        this.name = product1;
+        this.description = description1;
+        this.price = v;
+        this.category = category1;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Double getPrice() {
-        return price;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Product product = (Product) o;
-        return Objects.equals(id, product.id) && Objects.equals(name, product.name) && Objects.equals(description, product.description) && Objects.equals(price, product.price) && Objects.equals(category, product.category);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, description, price, category);
-    }
-
-    @Override
-    public String toString() {
-        return "Product{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", price=" + price +
-                ", category='" + category + '\'' +
-                ", quantity=" + quantity +
-                '}';
-    }
 }

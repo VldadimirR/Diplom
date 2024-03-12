@@ -5,12 +5,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.demo.shop.models.Order;
+import ru.demo.shop.models.Status;
 import ru.demo.shop.repositories.OrderRepository;
 import ru.demo.shop.services.OrderJPADataAccessService;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -100,6 +99,69 @@ class OrderJPADataAccessServiceTest {
 
         // Assert
         assertTrue(result);
+    }
+
+    @Test
+    public void testGetOrdersByUserId() {
+        // Arrange
+        Long userId = 1L;
+        Order order1 = new Order();
+        Order order2 = new Order();
+        List<Order> expectedOrders = Arrays.asList(order1, order2);
+        when(orderRepository.getOrdersByUserId(userId)).thenReturn(expectedOrders);
+
+        // Act
+        List<Order> actualOrders = orderService.getOrdersByUserId(userId);
+
+        // Assert
+        assertEquals(expectedOrders, actualOrders);
+    }
+
+    @Test
+    public void testCountByStatus() {
+        // Arrange
+        Status status = Status.COMPLETED;
+        int expectedCount = 5;
+        when(orderRepository.countByStatus(status)).thenReturn(expectedCount);
+
+        // Act
+        int actualCount = orderService.countByStatus(status);
+
+        // Assert
+        assertEquals(expectedCount, actualCount);
+    }
+
+    @Test
+    public void testGetOrderCountByDate() {
+        // Arrange
+        Date date = new Date();
+        Object[] orderCountByDate1 = {date, 10};
+        Object[] orderCountByDate2 = {date, 20};
+        List<Object[]> expectedOrderCountByDate = Arrays.asList(orderCountByDate1, orderCountByDate2);
+        when(orderRepository.getOrderCountByDate()).thenReturn(expectedOrderCountByDate);
+
+        // Act
+        List<Object[]> actualOrderCountByDate = orderService.getOrderCountByDate();
+
+        // Assert
+        assertEquals(expectedOrderCountByDate, actualOrderCountByDate);
+    }
+
+    @Test
+    public void testGetOrderCountByUserAuthStatus() {
+        // Arrange
+        String authStatus = "AUTHORIZED";
+        int count = 15;
+        Object[] orderCountByUserAuthStatus = {authStatus, count};
+        List<Object[]> expectedOrderCountByUserAuthStatus = new ArrayList<>();
+        expectedOrderCountByUserAuthStatus.add(orderCountByUserAuthStatus);
+        when(orderRepository.getOrderCountByUserAuthStatus()).thenReturn(expectedOrderCountByUserAuthStatus);
+
+        // Act
+        List<Object[]> actualOrderCountByUserAuthStatus = orderService.getOrderCountByUserAuthStatus();
+
+        // Assert
+        assertEquals(expectedOrderCountByUserAuthStatus, actualOrderCountByUserAuthStatus);
     }
 }
 

@@ -39,10 +39,6 @@ public class UserService {
                 )));
     }
 
-    public void addUser(User user) {
-         userDao.insertUser(user);
-    }
-
     public void updateUser(Long userId, UserUpdateRequest updateRequest) {
         User existingUser = userDao.selectUserById(userId)
                 .orElseThrow(() -> new UserNotFoundException(
@@ -99,21 +95,6 @@ public class UserService {
     }
 
 
-    public Optional<User> getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
-            String username = authentication.getName();
-            Long id = getUserIdByUsername(username);
-            return getUser(id);
-        }
-        return Optional.empty();
-    }
-
-    public Role getCurrentUserRole() {
-        Optional<User> currentUserOptional = getCurrentUser();
-        return currentUserOptional.map(User::getRole).orElse(null);
-    }
-
     public boolean isEmailAlreadyInUse(String email) {
         return userDao.isEmailAlreadyInUse(email);
     }
@@ -128,6 +109,21 @@ public class UserService {
         usersByRole.put("ROLE_USER", (int) userCount);
 
         return usersByRole;
+    }
+
+    public Optional<User> getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
+            Long id = getUserIdByUsername(username);
+            return userDao.selectUserById(id);
+        }
+        return Optional.empty();
+    }
+
+    public Role getCurrentUserRole() {
+        Optional<User> currentUserOptional = getCurrentUser();
+        return currentUserOptional.map(User::getRole).orElse(null);
     }
 
     public void setUserAndRoleAttributes(Model model, Principal principal) {

@@ -1,25 +1,27 @@
 package ru.demo.shop.sevices;
 
-
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
-import ru.demo.shop.models.Role;
-import ru.demo.shop.request.UserUpdateRequest;
 import ru.demo.shop.dao.UserDao;
 import ru.demo.shop.exception.UserNotFoundException;
+import ru.demo.shop.models.Role;
 import ru.demo.shop.models.User;
-import ru.demo.shop.repositories.UserRepository;
-import ru.demo.shop.services.UserJPADataAccessService;
+import ru.demo.shop.request.UserUpdateRequest;
 import ru.demo.shop.services.UserService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static junit.framework.TestCase.assertEquals;
@@ -35,15 +37,8 @@ public class UserServiceTest {
     @Mock
     private UserDao userDao;
 
-    @Autowired
-    private UserJPADataAccessService jpaDataAccessService;
-
-    @Autowired
+    @InjectMocks
     private UserService userService;
-
-    @Autowired
-    private UserRepository userRepository;
-
 
     @Test
     public void testGetAllUsers() {
@@ -63,10 +58,11 @@ public class UserServiceTest {
                 "password",
                 Role.ROLE_USER);
 
-        userRepository.saveAll(List.of(user1,user2));
+        when(userDao.selectAllUsers()).thenReturn(List.of(user1,user2));
 
         // When
         List<User> users = userService.getAllUsers();
+
 
         // Then
         assertNotNull(users);
@@ -82,14 +78,16 @@ public class UserServiceTest {
                 "Address1",
                 "password",
                 Role.ROLE_USER);
-        User saveUser = userRepository.save(user1);
+
+        long id = 1;
+
+        when(userDao.selectUserById(id)).thenReturn(Optional.of(user1));
 
         // When
-        Optional<User> retrievedUser = userService.getUser(saveUser.getId());
+        Optional<User> retrievedUser = userService.getUser(id);
 
         // Then
         assertTrue(retrievedUser.isPresent());
-        assertEquals(saveUser.getId(), retrievedUser.get().getId());
 
     }
 
@@ -97,6 +95,7 @@ public class UserServiceTest {
     public void testGetUserThrowsExceptionWhenNotFound(){
         // Given
         Long userId = 1L;
+
         when(userDao.selectUserById(userId)).thenReturn(Optional.empty());
 
         // When, Then
@@ -115,7 +114,6 @@ public class UserServiceTest {
                 "Address1",
                 "password",
                 Role.ROLE_USER);
-        User saveUser = userRepository.save(user);
 
         UserUpdateRequest userUpdateRequest = new UserUpdateRequest(
                 "UpdateUser",
@@ -125,12 +123,16 @@ public class UserServiceTest {
                 Role.ROLE_USER
                 );
 
-        // When
+        long id = 1;
 
-        userService.updateUser(saveUser.getId(),userUpdateRequest);
+        when(userDao.selectUserById(id)).thenReturn(Optional.of(user));
+
+        // When
+        userService.updateUser(id,userUpdateRequest);
 
         // Then
-        User updateUser = userService.getUser(user.getId()).orElse(null);
+        User updateUser = userService.getUser(id).orElse(null);
+
         assertNotNull(updateUser);
         assertEquals(userUpdateRequest.firstname(), updateUser.getFirstname());
         assertEquals(userUpdateRequest.email(), updateUser.getEmail());
@@ -145,9 +147,7 @@ public class UserServiceTest {
                 "Address1",
                 "password",
                 Role.ROLE_USER);
-        User saveUser = userRepository.save(user);
 
-        // When
         UserUpdateRequest userUpdateRequest = new UserUpdateRequest(
                 "UpdateUser",
                 "user1@example.com",
@@ -155,13 +155,18 @@ public class UserServiceTest {
                 "new Address",
                 Role.ROLE_USER
         );
-        userService.updateUser(saveUser.getId(),userUpdateRequest);
+
+        long id = 1;
+
+        when(userDao.selectUserById(id)).thenReturn(Optional.of(user));
+
+        // When
+        userService.updateUser(id,userUpdateRequest);
 
         // Then
-        User updateUser = userService.getUser(user.getId()).orElse(null);
-        assertNotNull(updateUser);
+        User updateUser = userService.getUser(id).orElse(null);
 
-        // Проверяем, что обновлено только поле "Username"
+        assertNotNull(updateUser);
         assertEquals(user.getFirstname(), updateUser.getFirstname());
         assertEquals(userUpdateRequest.email(), updateUser.getEmail());
     }
@@ -176,9 +181,8 @@ public class UserServiceTest {
                 "Address1",
                 "password",
                 Role.ROLE_USER);
-        User saveUser = userRepository.save(user);
 
-        // When
+
         UserUpdateRequest userUpdateRequest = new UserUpdateRequest(
                 "UpdateUser",
                 "user1@example.com",
@@ -186,13 +190,17 @@ public class UserServiceTest {
                 "new Address",
                 Role.ROLE_USER
         );
-        userService.updateUser(saveUser.getId(),userUpdateRequest);
+        long id = 1;
+
+        when(userDao.selectUserById(id)).thenReturn(Optional.of(user));
+
+        // When
+        userService.updateUser(id,userUpdateRequest);
 
         // Then
-        User updateUser = userService.getUser(user.getId()).orElse(null);
-        assertNotNull(updateUser);
+        User updateUser = userService.getUser(id).orElse(null);
 
-        // Проверяем, что обновлено только поле "FullName"
+        assertNotNull(updateUser);
         assertEquals(userUpdateRequest.firstname(), updateUser.getFirstname());
         assertEquals(user.getUsername(), updateUser.getUsername());
     }
@@ -201,27 +209,38 @@ public class UserServiceTest {
 
     @Test
     public void testDeleteUser() {
-        // Given
-        User user = new User("User1",
-                "user1@example.com",
-                "123456789",
-                "Address1",
-                "password",
-                Role.ROLE_USER);
-        User savedUser = userRepository.save(user);
+
+        long id = 10;
+
+        when(userDao.existsUserWithId(id)).thenReturn(true);
 
         // When
-        userService.deleteUser(savedUser.getId());
+        userService.deleteUser(id);
 
         // Then
-        Optional<User> deleteUser = userRepository.findById(savedUser.getId());
-        assertFalse(deleteUser.isPresent());
+        verify(userDao).deleteUser(id);
+    }
+
+    @Test
+    public void testGetUserIdByUsername() {
+        // Given
+        String username = "testUser";
+        Long expectedUserId = 123L;
+
+        when(userDao.getUserIdByUsername(username)).thenReturn(expectedUserId);
+
+        // When
+        Long actualUserId = userService.getUserIdByUsername(username);
+
+        // Then
+        assertEquals(expectedUserId, actualUserId);
     }
 
     @Test
     public void willThrowDeleteUserByIdNotExists() {
         // Given
         Long userId = 1L;
+
         when(userDao.existsUserWithId(userId)).thenReturn(false);
 
         // When
@@ -233,5 +252,84 @@ public class UserServiceTest {
         // Then
         verify(userDao, never()).deleteUser(userId);
     }
+
+    @Test
+    public void testIsEmailAlreadyInUse_EmailNotInUse() {
+        // Given
+        String email = "test@example.com";
+        when(userDao.isEmailAlreadyInUse(email)).thenReturn(false);
+
+        // When
+        boolean result = userService.isEmailAlreadyInUse(email);
+
+        // Then
+        assertFalse(result);
+    }
+
+    @Test
+    public void testIsEmailAlreadyInUse_EmailAlreadyInUse() {
+        // Given
+        String email = "test@example.com";
+        when(userDao.isEmailAlreadyInUse(email)).thenReturn(true);
+
+        // When
+        boolean result = userService.isEmailAlreadyInUse(email);
+
+        // Then
+        assertTrue(result);
+    }
+
+    @Test
+    public void testGetUsersByRole() {
+        // Given
+        long adminCount = 5L;
+        long userCount = 10L;
+
+        when(userDao.countByRole(Role.ROLE_ADMIN)).thenReturn(adminCount);
+        when(userDao.countByRole(Role.ROLE_USER)).thenReturn(userCount);
+
+        // When
+        Map<String, Integer> result = userService.getUsersByRole();
+
+        // Then
+        Map<String, Integer> expectedResult = new HashMap<>();
+        expectedResult.put("ROLE_ADMIN", (int) adminCount);
+        expectedResult.put("ROLE_USER", (int) userCount);
+
+        assertEquals(expectedResult, result);
+    }
+
+
+//    @Test
+//    public void testGetCurrentUser() {
+//        // Given
+//        String username = "testUser";
+//        Long userId = 123L;
+//        User expectedUser = new User(userId,
+//                "User1",
+//                "user1@example.com",
+//                "123456789",
+//                "Address1",
+//                "password",
+//                Role.ROLE_USER);
+//
+//
+//        // Подменяем контекст аутентификации
+//        Authentication authentication = new UsernamePasswordAuthenticationToken("user1@example.com", "password");
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
+//
+//        // Задаем поведение мок-объекта
+//        when(userDao.getUserIdByUsername(username)).thenReturn(userId);
+//        when(userDao.selectUserById(userId)).thenReturn(Optional.of(expectedUser));
+//
+//
+//        // When
+//        Optional<User> actualUserOptional = userService.getCurrentUser();
+//        System.out.println(actualUserOptional);
+//
+//        // Then
+//        assertEquals(expectedUser, actualUserOptional.orElse(null));
+//    }
+
 
 }

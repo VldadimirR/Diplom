@@ -3,6 +3,7 @@ package ru.demo.shop.sevices;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,8 +16,7 @@ import ru.demo.shop.repositories.ProductRepository;
 import ru.demo.shop.request.ProductUpdateRequest;
 import ru.demo.shop.services.ProductService;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static junit.framework.TestCase.assertEquals;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -31,28 +31,27 @@ public class ProductServiceTest {
     @Mock
     private ProductDao productDao;
 
-    @Autowired
+    @InjectMocks
     private ProductService productService;
-
-    @Autowired
-    private ProductRepository productRepository;
 
     @Test
     public void testGetAllProducts() {
         // Given
-        Product product1 = new Product();
-        product1.setName("Test Product 1");
-        product1.setDescription("Description for Test Product 1");
-        product1.setPrice(19.99);
+        Product product1 = new Product("Test Product 1",
+                "Description for Test Product 1",
+                19.99,
+                "category for original"
+                );
 
-        Product product2 = new Product();
-        product2.setName("Test Product 2");
-        product2.setDescription("Description for Test Product 2");
-        product2.setPrice(29.99);
-
-        productRepository.saveAll(List.of(product1, product2));
+        Product product2 = new Product("Test Product 2",
+                "Description for Test Product 2",
+                29.99,
+                "category for original"
+                );
 
         // When
+        when(productDao.selectAllProducts()).thenReturn(List.of(product1,product2));
+
         List<Product> products = productService.getAllProducts();
 
         // Then
@@ -67,20 +66,24 @@ public class ProductServiceTest {
         product.setName("Test Product");
         product.setDescription("Description for Test Product");
         product.setPrice(39.99);
-        Product savedProduct = productRepository.save(product);
+
+        long id = 1;
 
         // When
-        Optional<Product> retrievedProduct = productService.getProduct(savedProduct.getId());
+        when(productDao.selectProductById(id)).thenReturn(Optional.of(product));
+
+        Optional<Product> retrievedProduct = productService.getProduct(id);
 
         // Then
         assertTrue(retrievedProduct.isPresent());
-        assertEquals(savedProduct.getId(), retrievedProduct.get().getId());
+        assertEquals(product.getId(), retrievedProduct.get().getId());
     }
 
     @Test
     public void testGetCustomerThrowsExceptionWhenNotFound() {
         // Given
         Long productId = 1L;
+
         when(productDao.selectProductById(productId)).thenReturn(Optional.empty());
 
         // When, Then
@@ -98,14 +101,17 @@ public class ProductServiceTest {
         product.setDescription("Description for New Product");
         product.setPrice(49.99);
 
+        long id = 1;
+
+        when(productDao.selectProductById(id)).thenReturn(Optional.of(product));
+
         // When
         productService.addProduct(product);
 
         // Then
-        Product addedProduct = productService.getProduct(product.getId()).orElse(null);
+        Product addedProduct = productService.getProduct(id).orElse(null);
 
         assertNotNull(addedProduct);
-        assertNotNull(addedProduct.getId());
         assertEquals(product.getName(), addedProduct.getName());
         assertEquals(product.getDescription(), addedProduct.getDescription());
         assertEquals(product.getPrice(), addedProduct.getPrice());
@@ -114,112 +120,126 @@ public class ProductServiceTest {
     @Test
     public void testUpdateProduct() {
         // Given
-        Product product = new Product();
-        product.setName("Original Product");
-        product.setDescription("Description for Original Product");
-        product.setPrice(59.99);
-        Product savedProduct = productRepository.save(product);
+        Product product = new Product("Original Product",
+                "Description for Original Product",
+                59.99,
+                "category for original");
+
+        ProductUpdateRequest productUpdateRequest = new ProductUpdateRequest(
+                "Updated Product",
+                "Updated Description",
+                69.99,
+                "category");
+
+        long id = 1;
+
+        when(productDao.selectProductById(id)).thenReturn(Optional.of(product));
 
         // When
-        savedProduct.setName("Updated Product");
-        savedProduct.setDescription("Updated Description");
-        savedProduct.setPrice(69.99);
-//        productService.updateProduct(savedProduct.getId(), savedProduct);
+        productService.updateProduct(id, productUpdateRequest);
 
         // Then
-        Product updatedProduct = productService.getProduct(savedProduct.getId()).orElse(null);
+        Product updatedProduct = productService.getProduct(id).orElse(null);
+
         assertNotNull(updatedProduct);
-        assertEquals(savedProduct.getId(), updatedProduct.getId());
-        assertEquals(savedProduct.getName(), updatedProduct.getName());
-        assertEquals(savedProduct.getDescription(), updatedProduct.getDescription());
-        assertEquals(savedProduct.getPrice(), updatedProduct.getPrice());
+        assertEquals(updatedProduct.getId(), product.getId());
+        assertEquals(updatedProduct.getName(), product.getName());
+        assertEquals(updatedProduct.getDescription(), product.getDescription());
+        assertEquals(updatedProduct.getPrice(), product.getPrice());
+        assertEquals(updatedProduct.getCategory(), product.getCategory());
     }
 
     @Test
     public void testUpdateProductWithOnlyName() {
         // Given
-        Product originalProduct = new Product();
-        originalProduct.setName("Original Name");
-        originalProduct.setDescription("Original Description");
-        originalProduct.setPrice(19.99);
+        Product product = new Product("Original Product",
+                "Description for Original Product",
+                59.99,
+                "category for original");
 
-        productRepository.save(originalProduct);
+        ProductUpdateRequest productUpdateRequest = new ProductUpdateRequest(
+                "Updated Product",
+                "Updated Description",
+                69.99,
+                "category");
+
+        long id = 1;
+
+        when(productDao.selectProductById(id)).thenReturn(Optional.of(product));
 
         // When
-        ProductUpdateRequest updatedProduct = new ProductUpdateRequest(
-                "Updated Name",
-                null,
-                null,
-                null);
-
-        productService.updateProduct(originalProduct.getId(), updatedProduct);
+        productService.updateProduct(id, productUpdateRequest);
 
         // Then
-        Product resultProduct = productService.getProduct(originalProduct.getId()).orElse(null);
-        assertNotNull(resultProduct);
+        Product updatedProduct = productService.getProduct(id).orElse(null);
 
-        // Проверяем, что обновлено только поле "Name"
-        assertEquals(updatedProduct.name(), resultProduct.getName());
-        assertEquals(originalProduct.getDescription(), resultProduct.getDescription());
-        assertEquals(originalProduct.getPrice(), resultProduct.getPrice());
+        assertNotNull(updatedProduct);
+
+        assertEquals(productUpdateRequest.name(), updatedProduct.getName());
+        assertEquals(product.getDescription(), updatedProduct.getDescription());
+        assertEquals(product.getPrice(), updatedProduct.getPrice());
     }
 
     @Test
     public void testUpdateProductWithOnlyDescription() {
         // Given
-        Product originalProduct = new Product();
-        originalProduct.setName("Original Name");
-        originalProduct.setDescription("Original Description");
-        originalProduct.setPrice(19.99);
+        Product product = new Product("Original Product",
+                "Description for Original Product",
+                59.99,
+                "category for original");
 
-        productRepository.save(originalProduct);
+        ProductUpdateRequest productUpdateRequest = new ProductUpdateRequest(
+                "Updated Product",
+                "Updated Description",
+                69.99,
+                "category");
+
+        long id = 1;
+
+        when(productDao.selectProductById(id)).thenReturn(Optional.of(product));
 
         // When
-        ProductUpdateRequest updatedProduct = new ProductUpdateRequest(
-                null,
-                "Updated Description",
-                null,
-                null);
-
-        productService.updateProduct(originalProduct.getId(), updatedProduct);
+        productService.updateProduct(id, productUpdateRequest);
 
         // Then
-        Product resultProduct = productService.getProduct(originalProduct.getId()).orElse(null);
-        assertNotNull(resultProduct);
+        Product updatedProduct = productService.getProduct(id).orElse(null);
 
-        // Проверяем, что обновлено только поле "Description"
-        assertEquals(originalProduct.getName(), resultProduct.getName());
-        assertEquals(updatedProduct.description(), resultProduct.getDescription());
-        assertEquals(originalProduct.getPrice(), resultProduct.getPrice());
+        assertNotNull(updatedProduct);
+
+        assertEquals(product.getName(), updatedProduct.getName());
+        assertEquals(productUpdateRequest.description(), updatedProduct.getDescription());
+        assertEquals(product.getPrice(), updatedProduct.getPrice());
     }
 
     @Test
     public void testUpdateProductWithOnlyPrice() {
         // Given
-        Product originalProduct = new Product();
-        originalProduct.setName("Original Name");
-        originalProduct.setDescription("Original Description");
-        originalProduct.setPrice(19.99);
+        Product product = new Product("Original Product",
+                "Description for Original Product",
+                59.99,
+                "category for original");
 
-        productRepository.save(originalProduct);
+        ProductUpdateRequest productUpdateRequest = new ProductUpdateRequest(
+                "Updated Product",
+                "Updated Description",
+                69.99,
+                "category");
+
+        long id = 1;
+
+        when(productDao.selectProductById(id)).thenReturn(Optional.of(product));
 
         // When
-        ProductUpdateRequest updatedProduct = new ProductUpdateRequest(
-                null,
-                null,
-                29.99,
-                null);
-
-        productService.updateProduct(originalProduct.getId(), updatedProduct);
+        productService.updateProduct(id, productUpdateRequest);
 
         // Then
-        Product resultProduct = productService.getProduct(originalProduct.getId()).orElse(null);
-        assertNotNull(resultProduct);
+        Product updatedProduct = productService.getProduct(id).orElse(null);
 
-        // Проверяем, что обновлено только поле "Price"
-        assertEquals(originalProduct.getName(), resultProduct.getName());
-        assertEquals(originalProduct.getDescription(), resultProduct.getDescription());
-        assertEquals(updatedProduct.price(), resultProduct.getPrice());
+        assertNotNull(updatedProduct);
+
+        assertEquals(product.getName(), updatedProduct.getName());
+        assertEquals(product.getDescription(), updatedProduct.getDescription());
+        assertEquals(productUpdateRequest.price(), updatedProduct.getPrice());
     }
 
 
@@ -227,24 +247,23 @@ public class ProductServiceTest {
     @Test
     public void testDeleteProduct() {
         // Given
-        Product product = new Product();
-        product.setName("Product to Delete");
-        product.setDescription("Description for Product to Delete");
-        product.setPrice(79.99);
-        Product savedProduct = productRepository.save(product);
+
+        long id = 1;
+
+        when(productDao.existsProductWithId(id)).thenReturn(true);
 
         // When
-        productService.deleteProduct(savedProduct.getId());
+        productService.deleteProduct(id);
 
         // Then
-        Optional<Product> deletedProduct = productRepository.findById(savedProduct.getId());
-        assertFalse(deletedProduct.isPresent());
+        verify(productDao).deleteProduct(id);
     }
 
     @Test
     public void willThrowDeleteProductByIdNotExists() {
         // Given
-        Long productId = 1L;
+        long productId = 1;
+
         when(productDao.existsProductWithId(productId)).thenReturn(false);
 
         // When
@@ -256,5 +275,247 @@ public class ProductServiceTest {
         // Then
         verify(productDao, never()).deleteProduct(productId);
     }
+
+    @Test
+    public void testGetProductsByCategory() {
+        // Given
+        String category = "Electronics";
+        List<Product> expectedProducts = Arrays.asList(
+                new Product("Original Product",
+                        "Description for Original Product",
+                        59.99,
+                        "category for original"),
+                new Product("Test Product 2",
+                        "Description for Test Product 2",
+                        29.99,
+                        "category for original"
+        ));
+
+        when(productDao.getProductsByCategory(category)).thenReturn(expectedProducts);
+
+        // When
+        List<Product> result = productService.getProductsByCategory(category);
+
+        // Then
+        assertEquals(expectedProducts, result);
+    }
+
+    @Test
+    public void testGetProductBySearch() {
+        // Given
+        String productName = "Laptop";
+        List<Product> expectedProducts = Arrays.asList(
+                new Product("Original Product",
+                        "Description for Original Product",
+                        59.99,
+                        "category for original"),
+                new Product("Test Product 2",
+                        "Description for Test Product 2",
+                        29.99,
+                        "category for original"
+                ));
+
+        when(productDao.getProductsByName(productName)).thenReturn(expectedProducts);
+
+        // When
+        List<Product> result = productService.getProductBySearch(productName);
+
+        // Then
+        assertEquals(expectedProducts, result);
+    }
+
+    @Test
+    public void testGetProductsSortedByPriceAsc() {
+        // Given
+        List<Product> products = Arrays.asList(
+                new Product("Laptop", "Electronics", 1000.0, "category"),
+                new Product("Smartphone", "Electronics", 500.0, "category"),
+                new Product("Headphones", "Electronics", 200.0, "category")
+        );
+        List<Product> expectedSortedProducts = Arrays.asList(
+                new Product("Headphones", "Electronics", 200.0, "category"),
+                new Product("Smartphone", "Electronics", 500.0,  "category"),
+                new Product("Laptop", "Electronics", 1000.0, "category")
+        );
+        when(productDao.getProductsSortedByPriceAsc(products)).thenReturn(expectedSortedProducts);
+
+        // When
+        List<Product> result = productService.getProductsSortedByPriceAsc(products);
+
+        // Then
+        assertEquals(expectedSortedProducts, result);
+    }
+
+    @Test
+    public void testGetProductsSortedByPriceDesc() {
+        // Given
+        List<Product> products = Arrays.asList(
+                new Product("Laptop", "Electronics", 1000.0, "category"),
+                new Product("Smartphone", "Electronics", 500.0, "category"),
+                new Product("Headphones", "Electronics", 200.0, "category")
+        );
+        List<Product> expectedSortedProducts = Arrays.asList(
+                new Product("Laptop", "Electronics", 1000.0, "category"),
+                new Product("Smartphone", "Electronics", 500.0, "category"),
+                new Product("Headphones", "Electronics", 200.0, "category")
+        );
+
+        when(productDao.getProductsSortedByPriceDesc(products)).thenReturn(expectedSortedProducts);
+
+        // When
+        List<Product> result = productService.getProductsSortedByPriceDesc(products);
+
+        // Then
+        assertEquals(expectedSortedProducts, result);
+    }
+
+    @Test
+    public void testGetAllCategories() {
+        // Given
+        List<String> expectedCategories = Arrays.asList("category1", "category2", "category3");
+        when(productDao.getAllCategories()).thenReturn(expectedCategories);
+
+        // When
+        List<String> actualCategories = productService.getAllCategories();
+
+        // Then
+        assertEquals(expectedCategories, actualCategories);
+    }
+
+    @Test
+    public void testGetProductForBasket() {
+        // Given
+        List<String> cartItems = Arrays.asList("1", "2", "3", "1", "2");
+        List<Long> cartItemsLong = Arrays.asList(1L, 2L, 3L, 1L, 2L);
+
+        Map<Long, Integer> productCountMap = new HashMap<>();
+        for (long idProduct : cartItemsLong) {
+            productCountMap.put(idProduct, productCountMap.getOrDefault(idProduct, 0) + 1);
+        }
+
+        List<Product> expectedProducts = Arrays.asList(
+                new Product(1L, "Product1", "Description1", 10.0, "Category1", 2),
+                new Product(2L, "Product2", "Description2", 20.0, "Category2", 2),
+                new Product(3L, "Product3", "Description3", 30.0, "Category3", 1)
+        );
+
+        when(productDao.selectProductById(1L)).thenReturn(Optional.of(new Product(
+                1L, "Product1", "Description1", 10.0, "Category1")));
+        when(productDao.selectProductById(2L)).thenReturn(Optional.of(new Product(
+                2L, "Product2", "Description2", 20.0, "Category2")));
+        when(productDao.selectProductById(3L)).thenReturn(Optional.of(new Product(
+                3L, "Product3", "Description3", 30.0, "Category3")));
+
+        // When
+        List<Product> actualProducts = productService.getProductForBasket(cartItems);
+
+        // Then
+        assertEquals(expectedProducts.size(), actualProducts.size());
+        for (Product expectedProduct : expectedProducts) {
+            assertEquals(expectedProduct, actualProducts.stream().filter(p -> p.getId().equals(expectedProduct.getId())).findFirst().orElse(null));
+        }
+    }
+
+    @Test
+    public void testGetTotalAmount() {
+        // Given
+        List<Product> productList = Arrays.asList(
+                new Product(1L, "Product1", "Description1", 10.0, "Category1", 2),
+                new Product(2L, "Product2", "Description2", 20.0, "Category2", 3),
+                new Product(3L, "Product3", "Description3", 30.0, "Category3", 1)
+        );
+
+        // Expected total amount = (10.0 * 2) + (20.0 * 3) + (30.0 * 1) = 20.0 + 60.0 + 30.0 = 110.0
+
+        // When
+        double actualTotalAmount = productService.getTotalAmount(productList);
+
+        // Then
+        assertEquals(110.0, actualTotalAmount);
+    }
+
+
+    @Test
+    public void testGetProductPriceDistribution() {
+        // Given
+        when(productDao.countProductsByPriceLessThan(50)).thenReturn(3);
+        when(productDao.countProductsByPriceBetween(50, 100)).thenReturn(5);
+        when(productDao.countProductsByPriceBetween(100, 150)).thenReturn(2);
+        when(productDao.countProductsByPriceGreaterThanEqual(200)).thenReturn(1);
+
+        // Expected distribution:
+        // lessThan50: 3
+        // between50And100: 5
+        // between100And150: 2
+        // over200: 1
+
+        // When
+        Map<String, Integer> actualPriceDistribution = productService.getProductPriceDistribution();
+
+        // Then
+        Map<String, Integer> expectedPriceDistribution = new HashMap<>();
+        expectedPriceDistribution.put("lessThan50", 3);
+        expectedPriceDistribution.put("between50And100", 5);
+        expectedPriceDistribution.put("between100And150", 2);
+        expectedPriceDistribution.put("over200", 1);
+
+        assertEquals(expectedPriceDistribution, actualPriceDistribution);
+    }
+
+
+    @Test
+    public void testGetProductCountByCategory() {
+        // Given
+        List<Object[]> mockResult = List.of(
+                new Object[]{"Category1", 5L},
+                new Object[]{"Category2", 8L}
+        );
+
+        when(productDao.getProductCountByCategory()).thenReturn(mockResult);
+
+        // When
+        Map<String, Long> actualProductCountByCategory = productService.getProductCountByCategory();
+
+        // Then
+        Map<String, Long> expectedProductCountByCategory = new HashMap<>();
+        expectedProductCountByCategory.put("Category1", 5L);
+        expectedProductCountByCategory.put("Category2", 8L);
+
+        assertEquals(expectedProductCountByCategory, actualProductCountByCategory);
+    }
+
+    @Test
+    public void testGetPage() {
+        // Given
+        List<Product> mockProducts = Arrays.asList(
+                new Product(1L, "Product1", "Description1", 10.0, "Category1", 2),
+                new Product(2L, "Product2", "Description2", 20.0, "Category2", 2),
+                new Product(3L, "Product3", "Description3", 30.0, "Category3", 1)
+        );
+        int page = 1;
+        int size = 2;
+
+        // When
+        List<Product> pageResult = productService.getPage(mockProducts, page, size);
+
+        // Then
+        assertEquals(1, pageResult.size());
+        assertEquals("Product3", pageResult.get(0).getName());
+    }
+
+    @Test
+    public void testGetTotalPages() {
+        // Given
+        int totalItems = 5;
+        int size = 2;
+
+        // When
+        int totalPages = productService.getTotalPages(totalItems, size);
+
+        // Then
+        assertEquals(3, totalPages);
+    }
+
+
 
 }
