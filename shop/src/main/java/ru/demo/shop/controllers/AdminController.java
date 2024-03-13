@@ -86,7 +86,4 @@ public class AdminController {
         }
         return "page/admin/profile";
     }
-
-
-
 }

@@ -298,38 +298,4 @@ public class UserServiceTest {
 
         assertEquals(expectedResult, result);
     }
-
-
-//    @Test
-//    public void testGetCurrentUser() {
-//        // Given
-//        String username = "testUser";
-//        Long userId = 123L;
-//        User expectedUser = new User(userId,
-//                "User1",
-//                "user1@example.com",
-//                "123456789",
-//                "Address1",
-//                "password",
-//                Role.ROLE_USER);
-//
-//
-//        // Подменяем контекст аутентификации
-//        Authentication authentication = new UsernamePasswordAuthenticationToken("user1@example.com", "password");
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-//
-//        // Задаем поведение мок-объекта
-//        when(userDao.getUserIdByUsername(username)).thenReturn(userId);
-//        when(userDao.selectUserById(userId)).thenReturn(Optional.of(expectedUser));
-//
-//
-//        // When
-//        Optional<User> actualUserOptional = userService.getCurrentUser();
-//        System.out.println(actualUserOptional);
-//
-//        // Then
-//        assertEquals(expectedUser, actualUserOptional.orElse(null));
-//    }
-
-
 }

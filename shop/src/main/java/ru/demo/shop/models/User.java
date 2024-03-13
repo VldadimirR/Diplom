@@ -41,8 +41,16 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public User(String user1, String mail, String number, String address1, String password, Role role) {
+    public User(@NonNull String firstname, @NonNull String email, @NonNull String phone, @NonNull String address,
+                @NonNull String password, Role role) {
+        this.firstname = firstname;
+        this.email = email;
+        this.phone = phone;
+        this.address = address;
+        this.password = password;
+        this.role = role;
     }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
