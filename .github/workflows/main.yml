@@ -1,4 +1,4 @@
-name: .github/workflows/main.yml
+name: CI
 
 on:
   workflow_dispatch:
@@ -6,41 +6,39 @@ on:
     branches:
       - main
     paths:
-      - shop/**
+      - 'shop/**'
 
-  jobs:
-    build:
-      runs-on: ubuntu-latest
-      services:
-        postgres:
-          image: postgres:14.1
-          env:
-            POSTGRES_USER: postgres
-            POSTGRES_PASSWORD: idLxCcMRT15O
-            POSTGRES_DB: shop
-          ports:
-            - 5432:5432
-          options: >-
-            --health-cmd pg_isready
-            --health-interval 10s
-            --health-timeout 5s
-            --health-retries 5
-
-
-  defaults:
-    run:
-      working-directory: ./shop
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-          cache: 'maven'
-      - name: Build and run Unit/Integration Tests with Maven
-        run: mvn -ntp -B verify
-      - name: Set build number
-        id: build-number
-        run: echo "BUILD_NUMBER=$(date '+%d.%m.%Y.%H.%M.%S')" >> $GITHUB_OUTPUT
-      - name: Build Package Push with Maven
-        run: mvn -ntp -B verify -Ddocker.image.tag=${{steps.build-number.outputs.BUILD_NUMBER}} jib:build
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:14.1
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: idLxCcMRT15O
+          POSTGRES_DB: shop
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    defaults:
+      run:
+        working-directory: ./shop
+      steps:
+        - uses: actions/checkout@v3
+        - uses: actions/setup-java@v3
+          with:
+            distribution: 'temurin'
+            java-version: '17'
+            cache: 'maven'
+        - name: Build and run Unit/Integration Tests with Maven
+          run: mvn -ntp -B verify
+        - name: Set build number
+          id: build-number
+          run: echo "BUILD_NUMBER=$(date '+%d.%m.%Y.%H.%M.%S')" >> $GITHUB_OUTPUT
+        - name: Build Package Push with Maven
+          run: mvn -ntp -B verify -Ddocker.image.tag=${{steps.build-number.outputs.BUILD_NUMBER}} jib:build
