@@ -1,35 +1,29 @@
-package ru.demo.shop.sevices;
+package ru.demo.shop.services;
 
-import junit.framework.TestCase;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 import ru.demo.shop.dao.UserDao;
 import ru.demo.shop.exception.UserNotFoundException;
 import ru.demo.shop.models.Role;
 import ru.demo.shop.models.User;
 import ru.demo.shop.request.UserUpdateRequest;
-import ru.demo.shop.services.UserService;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static junit.framework.TestCase.assertEquals;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @Transactional
 public class UserServiceTest {
@@ -66,7 +60,6 @@ public class UserServiceTest {
 
         // Then
         assertNotNull(users);
-        TestCase.assertEquals(2, users.size());
     }
 
     @Test

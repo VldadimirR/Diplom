@@ -1,19 +1,18 @@
-package ru.demo.shop.sevices;
+package ru.demo.shop.services;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.demo.shop.dao.OrderDao;
 import ru.demo.shop.exception.OrderNotFoundException;
 import ru.demo.shop.models.Order;
 import ru.demo.shop.models.OrderItem;
 import ru.demo.shop.models.Status;
 import ru.demo.shop.request.OrderUpdateRequest;
-import ru.demo.shop.services.OrderService;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -23,13 +22,12 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
-@Transactional
 public class OrderServiceTest {
 
     @Mock
