@@ -40,15 +40,6 @@ public class AdminControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Mock
-    private UserService userService;
-
-    @Mock
-    private ProductService productService;
-
-    @Mock
-    private OrderService orderService;
-
     @Test
     void testGetAdminPage() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/admin/adminPage"))
@@ -92,7 +83,7 @@ public class AdminControllerTest {
     @WithMockUser(username = "testuser", roles = {"USER"})
     public void testGetPage_UserNotFoundException() throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        SecurityContextHolder.getContext().setAuthentication(null); // Simulate an unauthenticated user
+        SecurityContextHolder.getContext().setAuthentication(null);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/admin/page"))
                 .andExpect(status().isOk())
