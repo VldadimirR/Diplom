@@ -1,4 +1,4 @@
-name: CI - Build Backend
+name: .github/workflows/main.yml
 
 on:
   workflow_dispatch:
